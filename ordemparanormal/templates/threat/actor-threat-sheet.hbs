@@ -18,7 +18,8 @@
                     </div>
                 </div>
 
-                {{!-- NOVA SEÇÃO: PRESENÇA PERTURBADORA --}}
+                
+                {{!-- SEÇÃO: PRESENÇA PERTURBADORA (ATUALIZADA) --}}
                 <div class="disturbing-presence flexrow flex-center" style="background: rgba(0, 0, 0, 0.05); border-radius: 5px; padding: 2px 5px; margin-top: 5px; gap: 10px;">
                     <label style="font-weight: bold; font-size: 11px; white-space: nowrap; color: #333;">Presença Perturbadora:</label>
                     
@@ -32,6 +33,10 @@
                         <label style="font-size: 10px; color: #555;">Dano</label>
                         <input type="text" name="system.disturbingPresence.mentalDamage" value="{{system.disturbingPresence.mentalDamage}}" 
                                style="height: 18px; font-size: 11px; width: 60px; text-align: center;" placeholder="Ex: 2d6">
+                        
+                        {{!-- BOTÃO DE ROLAGEM --}}
+                        <i class="fas fa-brain rollable pointer" data-action="onRollMentalDamage" title="Rolar Dano Mental" 
+                           style="color: #6a0dad; font-size: 12px; margin-left: 2px;"></i>
                     </div>
                 </div>
             </div>

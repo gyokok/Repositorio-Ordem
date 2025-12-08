@@ -27,6 +27,7 @@ export class OrdemThreatSheet extends api.HandlebarsApplicationMixin(sheets.Acto
         this.options.actions.viewDoc = this._onViewDoc.bind(this);
         this.options.actions.deleteDoc = this._onDeleteDoc.bind(this);
         this.options.actions.onRoll = this._onRoll.bind(this);
+		this.options.actions.onRollMentalDamage = this._onRollMentalDamage.bind(this); 
 	}
 
 	/** @inheritDoc */
@@ -189,6 +190,32 @@ export class OrdemThreatSheet extends api.HandlebarsApplicationMixin(sheets.Acto
 		const attribute = target.dataset.key;
 		this.actor.rollAttribute({ attribute, event });
 	}
+	
+	async _onRollMentalDamage(event, target) {
+        event.preventDefault();
+        
+        // Recupera a fórmula do campo de dados
+        const formula = this.document.system.disturbingPresence.mentalDamage;
+
+        // Validação simples
+        if (!formula || formula.trim() === "") {
+            return ui.notifications.warn("Defina um valor ou fórmula para o Dano Mental (ex: 2d6).");
+        }
+
+        try {
+            // Cria a rolagem
+            const roll = new Roll(formula, this.actor.getRollData());
+            
+            // Envia para o chat
+            await roll.toMessage({
+                flavor: `Dano Mental (Presença Perturbadora)`,
+                speaker: ChatMessage.getSpeaker({ actor: this.document })
+            });
+        } catch (err) {
+            ui.notifications.error(`Erro na fórmula de dano mental: ${err.message}`);
+        }
+    }
+	
 
 	async _onRollSkill(event, target) {
 		event.preventDefault();

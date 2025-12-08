@@ -1,74 +1,63 @@
-<div class="ordemparanormal chat-card item-card" 
-     data-actor-id="{{actor._id}}" 
-     data-item-id="{{item._id}}"
-     {{#if tokenId}}data-token-id="{{tokenId}}"{{/if}}
-     {{#if sceneId}}data-scene-id="{{sceneId}}"{{/if}}>
-     
+<div class="ordemparanormal chat-card item-card" data-actor-id="{{actor._id}}" data-item-id="{{item._id}}">
 	<div class="header">
 		<img src="{{item.img}}" title="{{item.name}}" width="36px" height="36px" style="float: left" />
 		<h2>{{item.name}}</h2>
 	</div>
-
-	{{!-- Informações de Ritual (Se houver) --}}
-	{{#if system.circle}} 
-		{{#if system.element}}
-		<span class="element {{system.element}}">{{localize (concat "op.elementChoices." system.element)}} {{system.circle}}</span>
-		{{/if}}
-		<div class="ritual-info">
-			{{#if system.execution}}
-				<p>
-					<strong>{{localize "op.execution"}}:</strong>
-					<span class="lowercase">{{localize (concat "op.executionChoices." system.execution)}}</span>
-				</p>
-			{{/if}}
-			{{#if system.range}}
-				<p>
-					<strong>{{localize "op.range"}}:</strong>
-					<span class="lowercase">{{localize (concat "op.rangeChoices." system.range)}}</span>
-				</p>
-			{{/if}}
-			{{#if system.target}}
-				<p>
-					<strong>
-						{{#ifEquals system.target "area"}}
-							{{localize (concat "op.targetChoices." system.target)}}:
-						{{/ifEquals}}
-						{{#ifInequals system.target "area"}}
-							{{localize 'op.target'}}:
-						{{/ifInequals}}
-					</strong>
-					<span class="lowercase">{{#ifInequals system.target "area"}}
-							{{#ifEquals system.target "people"}}{{system.targetQtd}}{{/ifEquals}}
-							{{#ifEquals system.target "creatures"}}{{system.targetQtd}}{{/ifEquals}}
-							{{localize (concat "op.targetChoices." system.target)}}
-					{{/ifInequals}}
-					{{#ifEquals system.target "area"}}{{system.areaLabel}}{{/ifEquals}}</span>
-				</p>
-			{{/if}}
-			{{#if system.duration}}
-			<p>
-				<strong>{{localize "op.duration"}}:</strong>
-				<span class="lowercase">{{localize (concat "op.durationChoices." system.duration)}}</span>
-			</p>
-			{{/if}}
-			{{#if system.resistance}}
-				<p>
-					<strong>{{localize "op.resistance"}}:</strong>
-					<span class="lowercase">{{localize (concat "op.skill." system.skillResis)}}
-					{{localize (concat "op.resistanceChoices." system.resistance)}}</span>
-				</p>
-			{{/if}}
-		</div>
+	{{#if data.circle}} {{#if data.element}}
+	<span class="element {{data.element}}">{{localize (concat "op.elementChoices." data.element)}} {{data.circle}}</span>
 	{{/if}}
-
+	<div class="ritual-info">
+		{{#if data.execution}}
+			<p>
+				<strong>{{localize "op.execution"}}:</strong>
+				<span class="lowercase">{{localize (concat "op.executionChoices." data.execution)}}</span>
+			</p>
+		{{/if}}
+		{{#if data.range}}
+			<p>
+				<strong>{{localize "op.range"}}:</strong>
+				<span class="lowercase">{{localize (concat "op.rangeChoices." data.range)}}</span>
+			</p>
+		{{/if}}
+		{{#if data.target}}
+			<p>
+				<strong>
+					{{#ifEquals data.target "area"}}
+						{{localize (concat "op.targetChoices." data.target)}}:
+					{{/ifEquals}}
+					{{#ifInequals data.target "area"}}
+						{{localize 'op.target'}}:
+					{{/ifInequals}}
+				</strong>
+				<span class="lowercase">{{#ifInequals data.target "area"}}
+						{{#ifEquals data.target "people"}}{{data.targetQtd}}{{/ifEquals}}
+						{{#ifEquals data.target "creatures"}}{{data.targetQtd}}{{/ifEquals}}
+						{{localize (concat "op.targetChoices." data.target)}}
+				{{/ifInequals}}
+				{{#ifEquals data.target "area"}}{{i18n.areaLabel}}{{/ifEquals}}</span>
+			</p>
+		{{/if}}
+		{{#if data.duration}}
+		<p>
+			<strong>{{localize "op.duration"}}:</strong>
+			<span class="lowercase">{{localize (concat "op.durationChoices." data.duration)}}</span>
+		</p>
+		{{/if}}
+		{{#if data.resistance}}
+			<p>
+				<strong>{{localize "op.resistance"}}:</strong>
+				<span class="lowercase">{{localize (concat "op.skill." data.skillResis)}}
+				{{localize (concat "op.resistanceChoices." data.resistance)}}</span>
+			</p>
+		{{/if}}
+	</div>
+	{{/if}}
 	<h4>
 		<details>
 			<summary>{{localize "op.description"}}</summary>
 			{{{item.system.description}}}
 		</details>
 	</h4>
-
-	{{!-- Tabela de Armamento --}}
 	{{#ifEquals item.type "armament"}}
 		<table>
 			<tr>
@@ -78,26 +67,30 @@
 			</tr>
 			<tr>
 				<td>{{item.system.formulas.damage.formula}} {{#each item.system.formulas.damage.parts}}{{this.[0]}} {{/each}}</td>
-				<td>{{system.critical}}</td>
-				<td>{{system.range}}</td>
+				<td>{{data.critical}}</td>
+				<td>{{data.range}}</td>
 			</tr>
 		</table>
 	{{/ifEquals}}
-
-	{{!-- Botões de Ação --}}
 	<div class="card-buttons">
-		{{#if hasAttack}}
-		<button data-action="rollAttack"><i class="fa-solid fa-dice-d20"></i> {{localize "op.rollAtk"}}</button>
-		{{/if}} 
-		
-		{{#if hasDamage}}
-		<button data-action="rollDamage"><i class="fa-solid fa-dice"></i> {{localize "op.rollDmg"}}</button>
+		{{#if data.formulas.attack}}
+		<button data-action="attack"><i class="fa-solid fa-dice-d20"></i> {{localize "op.rollAtk"}}</button>
+		{{/if}} {{#if data.formulas.damage}}
+		<button data-action="damage"><i class="fa-solid fa-dice"></i> {{localize "op.rollDmg"}}</button>
 		{{/if}}
+		<!-- {{#if data.studentForm}}
+		<button data-action="attack">
+			<i class="fa-solid fa-dice-d20"></i> Forma Discente
+		</button>
+		{{/if}} {{#if data.trueForm}}
+		<button data-action="attack">
+			<i class="fa-solid fa-dice-d20"></i> Forma Verdadeira
+		</button>
+		{{/if}} -->
 	</div>
-
 	<footer class="card-footer">
-		{{#each labels as |label|}}
-		<span>{{label}}</span>
+		{{#each info}}
+		<span>{{this}}</span>
 		{{/each}}
 	</footer>
 </div>

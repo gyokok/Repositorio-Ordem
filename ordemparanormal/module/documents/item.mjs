@@ -4,150 +4,555 @@
  * https://github.com/foundryvtt/dnd5e/blob/a7f1404c7c38afa6d7dcc4f36a5fefd274034691/templates/chat/item-card.hbs
  * https://github.com/foundryvtt/dnd5e/blob/a7f1404c7c38afa6d7dcc4f36a5fefd274034691/module/documents/item.mjs#L1639
  */
+
 /**
  * Extend the basic Item with some very simple modifications.
  * @extends {Item}
  */
 export class OrdemItem extends Item {
 	/**
-   * Augment the basic Item data model with additional dynamic data.
-   */
+	 * Augment the basic Item data model with additional dynamic data.
+	 */
 	prepareData() {
+		// As with the actor class, items are documents that can have their data
+		// preparation methods overridden (such as prepareBaseData()).
 		super.prepareData();
 	}
 
 	/**
-   * Handle clickable rolls.
-   * @param {Event} event   The originating click event
-   * @private
-   */
-	async roll() {
-		const item = this;
-		const actor = this.actor;
+	 * Prepare a data object which is passed to any Roll formulas which are created related to this Item
+	 * @private
+	 */
+	getRollData() {
+		// If present, return the actor's roll data.
+		if (!this.actor) return null;
+		const rollData = this.actor.getRollData();
+		rollData.item = foundry.utils.deepClone(this.system);
 
-		if (!actor) return;
+		return rollData;
+	}
 
-		// Initialize chat data.
-		const speaker = ChatMessage.getSpeaker({ actor: this.actor });
-		const rollMode = game.settings.get('core', 'rollMode');
-		const label = `[${item.type}] ${item.name}`;
+	/* -------------------------------------------- */
+	/*  Chat Message Helpers                        */
+	/* -------------------------------------------- */
 
-		// Se for armamento, exibe o cartão de chat
-		if (item.type === 'armament') {
-            // LÓGICA DE TOKEN: Recupera o token e a cena para garantir que acharemos o ator depois
-			const token = actor.token; // TokenDocument (se unlinked) ou null (se linked)
-            const scene = token?.parent || game.scenes.current; // Cena do token ou cena atual
-
-			const templateData = {
-				actor: this.actor,
-				tokenId: token ? token.id : null, // ID do Token
-                sceneId: scene ? scene.id : null, // ID da Cena
-				item: item,
-				system: item.system,
-				labels: item.labels,
-				hasAttack: !!item.system.formulas.attack.formula,
-				hasDamage: !!item.system.formulas.damage.formula
+	/**
+	 * Apply listeners to chat messages.
+	 * @param {HTML} html  Rendered chat message.
+	 */
+	static chatListeners(html) {
+		html = (game.version.slice(0, 2) === '12') ? html[0] : html;
+		html.addEventListener('click', event => {
+			if (event.target.closest('.card-buttons button')) {
+				this._onChatCardAction(event);
 			};
-
-			const html = await renderTemplate('systems/ordemparanormal/templates/chat/item-card.html', templateData);
-
-			return ChatMessage.create({
-				speaker: speaker,
-				rollMode: rollMode,
-				content: html,
-				flags: { 
-					ordemparanormal: { 
-						cardType: "item",
-						itemId: item.id 
-					} 
-				}
-			});
-		}
+		});
+		// html.querySelector('.card-buttons button').addEventListener('click', this._onChatCardAction.bind(this));
+		// html.on('click', '.item-name', this._onChatCardToggleContent.bind(this));
 	}
 
-    async rollAttack() {
-        // Garante que o bonus exista (0 se undefined)
-        const bonus = this.system.formulas.attack.bonus || 0;
-        const formula = `${this.system.formulas.attack.formula} + ${bonus}`;
-        
-        const roll = new Roll(formula, this.actor.getRollData());
-        await roll.evaluate(); 
-        
-        await roll.toMessage({
-            speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-            flavor: `Ataque: ${this.name}`
-        });
-    }
-
-    async rollDamage() {
-        const bonus = this.system.formulas.damage.bonus || 0;
-        const formula = `${this.system.formulas.damage.formula} + ${bonus}`;
-        const type = this.system.formulas.damage.type;
-        
-        const roll = new Roll(formula, this.actor.getRollData());
-        await roll.evaluate();
-
-        await roll.toMessage({
-            speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-            flavor: `Dano (${type}): ${this.name}`
-        });
-    }
-
-	/* -------------------------------------------- */
-	/* Chat Card Actions                           */
 	/* -------------------------------------------- */
 
-	static async chatListeners(html) {
-		html.on('click', '.card-buttons button', this._onChatCardAction.bind(this));
-	}
-
+	/**
+	 * Handle execution of a chat card action via a click event on one of the card buttons
+	 * @param {Event} event       The originating click event
+	 * @returns {Promise}         A promise which resolves once the handler workflow is complete
+	 * @private
+	 */
 	static async _onChatCardAction(event) {
 		event.preventDefault();
-
 		// Extract card data
-		const button = event.currentTarget;
+		const button = event.target;
+		button.disabled = true;
 		const card = button.closest('.chat-card');
 		const messageId = card.closest('.message').dataset.messageId;
 		const message = game.messages.get(messageId);
 		const action = button.dataset.action;
 
-		// Validate permission
-		if (!message.isAuthor && !game.user.isGM) return;
+		// Recover the actor for the chat card
+		const actor = await this._getChatCardActor(card);
+		if (!actor) return;
 
-		// --- CORREÇÃO: RECUPERAR ATOR (TOKEN vs GLOBAL) ---
+		// Validate permission to proceed with the roll
+		const isTargetted = action === 'save';
+		if (!(isTargetted || game.user.isGM || actor.isOwner)) return;
+
+		// Get the Item from stored flag data or by the item ID on the Actor
+		const storedData = message.getFlag('ordemparanormal', 'itemData');
+		const item = storedData ? new this(storedData, { parent: actor }) : actor.items.get(card.dataset.itemId);
+		// if ( !item ) {
+		//   const err = game.i18n.format('ordemparanormal.ActionWarningNoItem', {item: card.dataset.itemId, name: actor.name});
+		//   return ui.notifications.error(err);
+		// }
+		// const spellLevel = parseInt(card.dataset.spellLevel) || null;
+
+		// Handle different actions
+		// let targets;
+		switch (action) {
+			case 'attack': { 
+				const rollAttack = await item.rollAttack({
+					event: event,
+				});
+				item.lastMessageId = messageId;
+				item.critical = rollAttack.criticalStatus;
+				break;
+			}
+			case 'damage': 
+				// case 'versatile':
+				await item.rollDamage({
+					event: event,
+					critical: item.critical,
+					lastId: item.lastMessageId == messageId,
+					// spellLevel: spellLevel,
+					// versatile: action === 'versatile'
+				});
+				break;
+			case 'formula':
+				await item.rollFormula({ event });
+				break;
+			case 'teste':
+				console.log('teste');
+				break;
+			//   case 'save':
+			// 	targets = this._getChatCardTargets(card);
+			// 	for ( const token of targets ) {
+			// 	  const speaker = ChatMessage.getSpeaker({scene: canvas.scene, token: token.document});
+			// 	  await token.actor.rollAbilitySave(button.dataset.ability, { event, speaker });
+			// 	}
+			// 	break;
+			//   case 'toolCheck':
+			// 	await item.rollToolCheck({event}); break;
+			//   case 'placeTemplate':
+			// 	try {
+			// 	  await ordemparanormal.canvas.AbilityTemplate.fromItem(item)?.drawPreview();
+			// 	} catch(err) {
+			// 	  Hooks.onError('Item5e._onChatCardAction', err, {
+			// 			msg: game.i18n.localize('op.PlaceTemplateError'),
+			// 			log: 'error',
+			// 			notify: 'error'
+			// 	  });
+			// 	}
+			// 	break;
+			//   case 'abilityCheck':
+			// 	targets = this._getChatCardTargets(card);
+			// 	for ( const token of targets ) {
+			// 	  const speaker = ChatMessage.getSpeaker({scene: canvas.scene, token: token.document});
+			// 	  await token.actor.rollAbilityTest(button.dataset.ability, { event, speaker });
+			// 	}
+			// 	break;
+		}
+
+		// Re-enable the button
+		button.disabled = false;
+	}
+
+	/**
+	 * Get the Actor which is the author of a chat card
+	 * @param {HTMLElement} card    The chat card being used
+	 * @returns {Actor|null}        The Actor document or null
+	 * @private
+	 */
+	static async _getChatCardActor(card) {
+		// Case 1 - a synthetic actor from a Token
+		if (card.dataset.tokenId) {
+			const token = await fromUuid(card.dataset.tokenId);
+			if (!token) return null;
+			return token.actor;
+		}
+
+		// Case 2 - use Actor ID directory
 		const actorId = card.dataset.actorId;
-		const tokenId = card.dataset.tokenId;
-        const sceneId = card.dataset.sceneId;
-		const itemId = card.dataset.itemId;
+		return game.actors.get(actorId) || null;
+	}
 
-		let actor;
+	/**
+	 * Prepare an object of chat data used to display a card for the Item in the chat log.
+	 * @param {object} htmlOptions    Options used by the TextEditor.enrichHTML function.
+	 * @returns {object}              An object of chat data to render.
+	 */
+	async getChatData(htmlOptions = {}) {
+		const data = this.toObject().system;
 
-        // 1. Tenta achar via Token na Cena Específica (Para Ameaças/Unlinked)
-        if (tokenId && sceneId) {
-            const scene = game.scenes.get(sceneId);
-            const token = scene?.tokens.get(tokenId);
-            if (token) actor = token.actor;
-        }
+		// Rich text description
+		data.description = await TextEditor.enrichHTML(data.description, {
+			relativeTo: this,
+			rollData: this.getRollData(),
+			...htmlOptions,
+		});
 
-        // 2. Tenta achar via Token na Cena Atual (Fallback)
-		if (!actor && tokenId) {
-			const token = canvas.tokens.get(tokenId);
-			if (token) actor = token.actor;
-		} 
-        
-        // 3. Tenta achar via ID Global (Para Personagens/Linked)
-        if (!actor) actor = game.actors.get(actorId);
+		// Type specific properties
+		// data.properties = [
+		//   ...this.system.chatProperties ?? [],
+		//   ...this.system.equippableItemChatProperties ?? [],
+		//   ...this.system.activatedEffectChatProperties ?? []
+		// ].filter(p => p);
 
-		if (!actor) return ui.notifications.error("Ator não encontrado. O token pode ter sido deletado ou a cena mudou.");
-        // ----------------------------------------------------
+		return data;
+	}
 
-		// Recover item
-		const item = actor.items.get(itemId);
+	/**
+	 * Place an attack roll using an item (weapon, feat, spell, or equipment)
+	 * Rely upon the d20Roll logic for the core implementation
+	 */
+	async rollAttack(options = {}) {
+		if (!this.system.formulas.attack.attr || !this.system.formulas.attack.skill)
+			throw new Error('This Item does not have a formula to roll!');
 
-		if (!item) return ui.notifications.error(`Este item não existe mais no inventário de ${actor.name}.`);
+		const attack = this.system.formulas.attack;
+		const skill = this.parent.system.skills[attack.skill];
+		let attribute = this.parent.system.attributes[attack.attr];
+		let rollMode = 'kh';
 
-		// Execute Action
-		if (action === 'rollAttack') return item.rollAttack();
-		else if (action === 'rollDamage') return item.rollDamage();
+		if (attribute.value == 0) {
+			attribute = 2;
+			rollMode = 'kl';
+		} else attribute = attribute.value;
+
+		const { parts, data } = CONFIG.Dice.BasicRoll.constructParts({
+			degree: skill.degree.value || null,
+			bonus: skill.value || null,
+			modifier: skill.mod || null,
+			attackBonus: attack.bonus || null
+		});
+
+		const rollConfig = {
+			parts: (parts ?? []).join(' + '),
+			formula: `${attribute}d20${rollMode}`,
+			data: this.getRollData(),
+			chatMessage: true,
+		};
+
+		// fromConfig
+		rollConfig.formula = [rollConfig.formula].concat(parts ?? []).join(' + ');
+		rollConfig.data = { ...(rollConfig.data ?? {}), ...data};
+
+		// if ( spellLevel ) rollConfig.data.item.level = spellLevel;
+		/**
+		 * A hook event that fires before a formula is rolled for an Item.
+		 * @function ordemparanormal.preRollFormula
+		 * @memberof hookEvents
+		 * @param {OrdemItem} item              Item for which the roll is being performed.
+		 * @param {object} config               Configuration data for the pending roll.
+		 * @param {string} config.formula       Formula that will be rolled.
+		 * @param {object} config.data          Data used when evaluating the roll.
+		 * @param {boolean} config.chatMessage  Should a chat message be created for this roll?
+		 * @returns {boolean}                   Explicitly return false to prevent the roll from being performed.
+		 */
+
+		// if ( Hooks.call('ordemparanormal.preRollFormula', this, rollConfig) === false ) return;
+
+		const roll = await new Roll(rollConfig.formula, rollConfig.data).roll({
+			async: true,
+		});
+
+		// Verificações de Crítico
+		const criticalStatus = this.isCritical({
+			crtalFormula: this.system.critical,
+			roll,
+		});
+
+		if (rollConfig.chatMessage) {
+			roll.toMessage({
+				speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+				flavor: `Atacou com ${this.name}`,
+				rollMode: game.settings.get('core', 'rollMode'),
+				flags: {
+					'ordemparanormal.messageRoll': {
+						type: 'attack',
+						itemId: this.id,
+						itemUuid: this.uuid,
+						isCritical: criticalStatus.isCritical,
+					},
+				},
+			});
+		}
+
+		/**
+		 * A hook event that fires after a formula has been rolled for an Item.
+		 * @function ordemparanormal.rollFormula
+		 * @memberof hookEvents
+		 * @param {OrdemItem} item  Item for which the roll was performed.
+		 * @param {Roll} roll       The resulting roll.
+		 */
+		Hooks.callAll('ordemparanormal.rollFormula', this, roll);
+
+		return { roll, criticalStatus };
+	}
+
+	/**
+	 *
+	 */
+	isCritical(critical = { isCritical: false }, options = {}) {
+		const formulaCritical = critical.crtalFormula.trim();
+
+		// Separa os valores no formato 19/x3 pela barra e atribui
+		// a variaveis com as respectivas conversões em qualquer ordem.
+		if (formulaCritical && formulaCritical.includes('/')) {
+			for (const crtalFor of critical.crtalFormula.split('/')) {
+				if (crtalFor.includes('x')) critical.multiplier = Number(crtalFor.replaceAll('x', ''));
+				else critical.margin = Number(crtalFor);
+			}
+		} else {
+			critical.multiplier = (formulaCritical.includes('x') && formulaCritical.replaceAll('x', '')) || 2;
+			critical.margin = (!formulaCritical.includes('x') && formulaCritical) || 20;
+		}
+		critical.isCritical = (Number(critical.roll.result.split('+')[0]) || critical.roll.result) >= critical.margin && true;
+		return critical;
+	}
+
+	/**
+	 * Place an attack roll using an item (weapon, feat, spell, or equipment)
+	 * Rely upon the d20Roll logic for the core implementation
+	 */
+	async rollDamage(options = {}) {
+		if (!this.system.formulas.damage.parts) throw new Error('This Item does not have a formula to roll!');
+
+		const prepareFormula = [];
+		const damageTypes = [];
+
+		// Damage Access
+		const damage = this.system.formulas.damage;
+
+		// Critical variable
+		const critical = options.critical || false;
+
+		const split = damage.formula.split('d');
+		if ((critical.isCritical && options.lastId) || options.event.altKey) {
+			prepareFormula.push(`${split[0] * critical.multiplier}d${split[1]}`);
+		} else {
+			prepareFormula.push(damage.formula);
+		}
+
+		// Verify the attributes
+		for (const [name, attrObject] of Object.entries(this.parent.system.attributes)) {
+			if (name == damage.attr) prepareFormula.push(attrObject.value);
+		}
+
+		// Get the main type damage
+		damageTypes.push(game.i18n.localize('op.damageTypeAbv.' + damage.type));
+
+		// Get all the other formulas
+		for (const parts of damage.parts) {
+			prepareFormula.push(`(${parts[0] || 0})`);
+			damageTypes.push(parts[1] ? game.i18n.localize('op.damageTypeAbv.' + parts[1]) : 'Indefinido');
+		}
+
+		// Combine all formulas and types
+		const formulas = prepareFormula.join('+');
+		const types = damageTypes.join('+').replaceAll('+', ' + ');
+
+		const rollConfig = {
+			formula: formulas,
+			data: this.getRollData(),
+			chatMessage: true,
+		};
+		// if ( spellLevel ) rollConfig.data.item.level = spellLevel;
+
+		/**
+		 * A hook event that fires before a formula is rolled for an Item.
+		 * @function ordemparanormal.preRollFormula
+		 * @memberof hookEvents
+		 * @param {OrdemItem} item              Item for which the roll is being performed.
+		 * @param {object} config               Configuration data for the pending roll.
+		 * @param {string} config.formula       Formula that will be rolled.
+		 * @param {object} config.data          Data used when evaluating the roll.
+		 * @param {boolean} config.chatMessage  Should a chat message be created for this roll?
+		 * @returns {boolean}                   Explicitly return false to prevent the roll from being performed.
+		 */
+
+		// if ( Hooks.call('ordemparanormal.preRollFormula', this, rollConfig) === false ) return;
+
+		const roll = await new Roll(rollConfig.formula, rollConfig.data).roll({
+			async: true,
+		});
+
+		if (rollConfig.chatMessage) {
+			roll.toMessage({
+				speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+				flavor: `Deu dano com ${this.name}. <br>(${types})`,
+				rollMode: game.settings.get('core', 'rollMode'),
+				// messageData: {'flags.ordemparanormal.roll': {type: 'other', itemId: this.id, itemUuid: this.uuid}}
+			});
+		}
+
+		/**
+		 * A hook event that fires after a formula has been rolled for an Item.
+		 * @function ordemparanormal.rollFormula
+		 * @memberof hookEvents
+		 * @param {Ordemitem} item  Item for which the roll was performed.
+		 * @param {Roll} roll       The resulting roll.
+		 */
+		Hooks.callAll('ordemparanormal.rollFormula', this, roll);
+
+		return roll;
+	}
+
+	/**
+	 * Trigger an item usage, optionally creating a chat message with followup actions.
+	 **/
+	async use(config = {}, options = {}) {
+		const item = this;
+		// const is = item.system;
+		// const as = item.actor.system;
+
+		// options = {
+		// 	createMessage: false
+		// };
+
+		// Prepare card data & display it if options.createMessage is true
+		const cardData = await item.roll(options);
+		return cardData;
+	}
+
+	/**
+	 * Handle clickable rolls.
+	 * @param {Event} event   The originating click event
+	 * @private
+	 */
+	async roll() {
+		const item = this;
+
+		// Initialize chat data.
+		const speaker = ChatMessage.getSpeaker({ actor: this.actor });
+		const rollMode = game.settings.get('core', 'rollMode');
+		// const label = 'Exibindo um(a) ' + game.i18n.localize('TYPES.Item.' + item.type) + ` (${item.name}):`;
+
+		// Render the chat card template
+		const token = this.actor.token;
+		const templateData = {
+			actor: this.actor,
+			tokenId: token?.uuid || null,
+			item: this,
+			data: await this.getChatData(),
+			labels: this.labels,
+			i18n: {},
+			info: [],
+		};
+
+		// for (const [key, value] of Object.entries(this.system) ) {
+		// 	if (isNaN(value) && Boolean(value)) {}
+		// }
+
+		if (item.type == 'armament') {
+			if (this.system?.proficiency) templateData.info.push(game.i18n.localize('op.proficiencyChoices.' + this.system.proficiency));
+			if (this.system?.critical) templateData.info.push(this.system.critical);
+			if (this.system.types?.gripType) templateData.info.push(game.i18n.localize('op.weaponGripTypeChoices.' + this.system.types.gripType));
+			if (this.system.types?.rangeType?.name) templateData.info.push(game.i18n.localize('op.weaponTypeChoices.' + this.system.types.rangeType.name));
+			if (this.system.types?.damageType) templateData.info.push(game.i18n.localize('op.damageTypeChoices.' + this.system.types.damageType));
+			if (this.system.conditions?.improvised) templateData.info.push(game.i18n.localize('op.improvised'));
+			if (this.system.conditions?.throwable) templateData.info.push(game.i18n.localize('op.throwable'));
+			if (this.system.conditions?.agile) templateData.info.push(game.i18n.localize('op.agile'));
+			if (this.system.conditions?.automatic) templateData.info.push(game.i18n.localize('op.automatic'));
+			if (this.system.conditions?.adaptableGrip) templateData.info.push(game.i18n.localize('op.adaptableGrip'));
+			if (this.system.conditions?.pistolBlow) templateData.info.push(game.i18n.localize('op.pistolBlow'));
+		}
+
+		if (item.type == 'ritual') {
+			if (this.system?.area.name && this.system.target == 'area'){
+				const area = {
+					name: game.i18n.localize('op.areaChoices.' + this.system.area.name),
+					type: game.i18n.localize('op.areaTypeChoices.' + this.system.area.type),
+					size: this.system.area.size
+				};
+				if (this.system?.area.name == 'cone' || this.system?.area.name == 'sphere') {
+					templateData.i18n.areaLabel = game.i18n.format('op.areaLabelSphereCone', area);
+				} else {
+					templateData.i18n.areaLabel = game.i18n.format('op.areaLabelCubeLine', area);
+				}
+			}
+		}
+
+		const html = await renderTemplate('systems/ordemparanormal/templates/chat/item-card.html', templateData);
+		// If there's no roll data, send a chat message.
+		// if (!this.system.formulas) {
+		ChatMessage.create({
+			speaker: speaker,
+			rollMode: rollMode,
+			// flavor: label,
+			content: html,
+			// content: item.system.description ?? '',
+		});
+		// }
+		// // Otherwise, create a roll and send a chat message from it.
+		// else {
+		// Retrieve roll data.
+		// const rollData = this.getRollData();
+
+		// // Invoke the roll and submit it to chat.
+		// const roll = new Roll(rollData.item.damage, rollData);
+
+		// // If you need to store the value first, uncomment the next line.
+		// // let result = await roll.roll({async: true});
+		// roll.toMessage({
+		// 	speaker: speaker,
+		// 	rollMode: rollMode,
+		// 	flavor: label,
+		// });
+
+		// 	ChatMessage.create({
+		// 		speaker: speaker,
+		// 		rollMode: rollMode,
+		// 		flavor: label,
+		// 		content: html,
+		// 	});
+
+		// 	// return roll;
+		// }
+	}
+
+	/**
+	 * Prepare data needed to roll an attack using an item (weapon, feat, spell, or equipment)
+	 * and then pass it off to `d20Roll`.
+	 * @param {object} [options]
+	 * @param {boolean} [options.spellLevel]  Level at which a spell is cast.
+	 * @returns {Promise<Roll>}   A Promise which resolves to the created Roll instance.
+	 */
+	async rollFormula(/* {spellLevel}={} */) {
+		if (!this.system.formulas.extraFormula) throw new Error('This Item does not have a formula to roll!');
+
+		const rollConfig = {
+			formula: this.system.formulas.extraFormula,
+			data: this.getRollData(),
+			chatMessage: true,
+		};
+		// if ( spellLevel ) rollConfig.data.item.level = spellLevel;
+
+		/**
+		 * A hook event that fires before a formula is rolled for an Item.
+		 * @function ordemparanormal.preRollFormula
+		 * @memberof hookEvents
+		 * @param {Item5e} item                 Item for which the roll is being performed.
+		 * @param {object} config               Configuration data for the pending roll.
+		 * @param {string} config.formula       Formula that will be rolled.
+		 * @param {object} config.data          Data used when evaluating the roll.
+		 * @param {boolean} config.chatMessage  Should a chat message be created for this roll?
+		 * @returns {boolean}                   Explicitly return false to prevent the roll from being performed.
+		 */
+
+		// if ( Hooks.call('ordemparanormal.preRollFormula', this, rollConfig) === false ) return;
+
+		const roll = await new Roll(rollConfig.formula, rollConfig.data).roll({
+			async: true,
+		});
+
+		if (rollConfig.chatMessage) {
+			roll.toMessage({
+				speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+				flavor: `${this.name}`,
+				rollMode: game.settings.get('core', 'rollMode'),
+				// messageData: {'flags.ordemparanormal.roll': {type: 'other', itemId: this.id, itemUuid: this.uuid}}
+			});
+		}
+
+		/**
+		 * A hook event that fires after a formula has been rolled for an Item.
+		 * @function ordemparanormal.rollFormula
+		 * @memberof hookEvents
+		 * @param {Item5e} item  Item for which the roll was performed.
+		 * @param {Roll} roll    The resulting roll.
+		 */
+		Hooks.callAll('ordemparanormal.rollFormula', this, roll);
+
+		return roll;
 	}
 }
