@@ -1,0 +1,435 @@
+{
+	"op.op": "Paranormal Order",
+	"TYPES.Actor.agent": "Agent",
+	"TYPES.Actor.threat": "Threat",
+
+	"TYPES.Item.protection": "Protection",
+	"op.protection.plural": "Proteções",
+
+	"TYPES.Item.generalEquipment": "General Equipment",
+	"op.generalEquipment.plural": "Equipments",
+
+	"TYPES.Item.armament": "Armament",
+	"op.armament.plural": "Armaments",
+
+	"TYPES.Item.ritual": "Ritual",
+	"op.ritual.plural": "Rituals",
+
+	"TYPES.Item.ability": "Ability",
+	"op.ability.plural": "Abilities",
+
+	"op.OrdemActorSheet": "Agent's Sheet",
+
+	"SETTINGS.opPatchNotes": "Desativar Notas de Atualização",
+	"SETTINGS.opPatchNotesHint": "Ao iniciar um mundo com o sistema Ordem Paranormal, ou, ao atualizar o sistema, notas de atualizações com as novidades são exibidas em uma janela, marque/desmarque essa opção para desativar/ativar.",
+	"SETTINGS.globalProgressRules": "Regras de Evolução",
+	"SETTINGS.globalProgressRulesHint": "As regras de evolução definem o modo de progresso das fichas de agente alterando a forma como elas funcionam. Consulte o livro de regras para mais informações sobre cada modo de progresso.",
+	"SETTINGS.nexProgressRule": "Evolução por NEX",
+	"SETTINGS.nexExpProgressRule": "NEX & Experiência",
+	"SETTINGS.patentesProgressRule": "Evolução por Patentes",
+	"SETTINGS.globalPlayingWithoutSanity": "Jogando sem Sanidade",
+	"SETTINGS.globalPlayingWithoutSanityHint": "Marcar esta opção funde os pontos de esforço e a sanidade das fichas de agente em pontos de determinação, uma opção que representa ambos PE e SAN.",
+
+	"MACRO.opUnownedWarn": "You can only create macro buttons for owned Items.",
+	"MACRO.opNoActorSelected": "No selected or assigned actor could be found to target with macro.",
+	"MACRO.opMissingTargetWarn": "Your controlled actor '{actor}' does not have an {type} with name '{name}'.",
+	"MACRO.opMultipleTargetsWarn": "Your controlled actor '{actor}' has more than one {type} with name '{name}'. The first match will be chosen.",
+	"WARN.overWeight": "O que você carrega não pode ultrapassar o dobro do seu peso máximo!",
+
+	"WORLD.GameSystem": "System Game",
+	"op.sidebar.updateNotes": "An unofficial system in version",
+	"op.soon": "Soon.",
+	"op.sidebar.discord": "Contact me on Discord",
+	"op.sidebar.bluesky": "Follow me on Bluesky",
+
+	"op.tab": {
+		"skills": "Skills",
+		"inventory": "Inventory",
+		"abilities": "Abilities",
+		"rituals": "Rituals",
+		"biography": "Biography",
+		"effects": "Effects"
+	},
+
+	"op.item.tab": {
+		"description": "Description",
+		"attributes": "Attributes",
+		"combat": "Combat",
+		"spec": "Specifications",
+		"effects": "Effects"
+	},
+
+	"op.PV": "Health Points",
+	"op.PE": "Effort Points",
+	"op.PD": "Determination Points",
+	"op.pePerRound": "EP / Round",
+	"op.pdPerRound": "DP / Round",
+	"op.San": "Sanity",
+	"op.NEX": "NEX",
+	"op.nivel": "Nivel",
+	"op.stage": "Stage",
+	"op.ritualdt": "Ritual DT is",
+
+	"op.skill": {
+		"acrobatics": "Acrobatics",
+		"animal": "Animal Training",
+		"arts": "Arts",
+		"athleticism": "Athleticism",
+		"relevance": "Relevance",
+		"sciences": "Sciences",
+		"crime": "Crime",
+		"diplomacy": "Diplomacy",
+		"deception": "Deception",
+		"resilience": "Resilience",
+		"stealth": "Stealth",
+		"initiative": "Initiative",
+		"intimidation": "Intimidation",
+		"intuition": "Intuition",
+		"investigation": "Investigation",
+		"fighting": "Fighting",
+		"medicine": "Medicine",
+		"occultism": "Occultism",
+		"perception": "Perception",
+		"driving": "Driving",
+		"aim": "Aim",
+		"reflexes": "Reflexes",
+		"religion": "Religion",
+		"survival": "Survival",
+		"tactics": "Tactics",
+		"technology": "Technology",
+		"will": "Will",
+		"freeSkill": "Free Skill"
+	},
+
+	"op.attDex": "Dexterity",
+	"op.attInt": "Intelligence",
+	"op.attVit": "Vitality",
+	"op.attPre": "Presence",
+	"op.attStr": "Strength",
+
+	"op.dexAbv": "Dex",
+	"op.intAbv": "Int",
+	"op.vitAbv": "Vit",
+	"op.preAbv": "Pre",
+	"op.strAbv": "Str",
+
+	"op.agiAbv": "Dex",
+	"op.vigAbv": "Vit",
+	"op.forAbv": "Str",
+
+	"op.newItem": "Novo(a)",
+
+	"op.effectCreate": "Create Effect",
+	"op.effectToggle": "Toggle Effect",
+	"op.effectEdit": "Edit Effect",
+	"op.effectDelete": "Delete Effect",
+	"op.temporaryEffects": "Temporary Effects",
+	"op.passiveEffects": "Passive Effects",
+	"op.inactiveEffects": "Inactive Effects",
+	"op.newEffect": "New Effect",
+	"op.sourceEffect": "Source",
+
+	"op.Add": "Add",
+
+	"op.degreeTrainingChoices": {
+		"dest": "Untrained",
+		"trei": "Trained",
+		"vet": "Veteran",
+		"expe": "Expert"
+	},
+
+	"op.className": "Class",
+	"op.classChoices": {
+		"fighter": "Fighter",
+		"specialist": "Specialist",
+		"occultist": "Occultist",
+		"survivor": "Survivor"
+	},
+
+	"op.originName": "Origin",
+	"op.originsChoices": {
+		"academico": "Scholar",
+		"agenteDeSaude": "Health Agent",
+		"amigoDosAnimais": "Amigo dos Animais",
+		"amnesico": "Amnesiac",
+		"artista": "Artist",
+		"astronauta": "Astronauta",
+		"atleta": "Athlete",
+		"chefDoOutroLado": "Chef do Outro Lado",
+		"chef": "Chef",
+		"colegial": "Colegial",
+		"cosplayer": "Cosplayer",
+		"criminoso": "Criminal",
+		"cultistaArrependido": "Regretful Cultist",
+		"desgarrado": "Stray",
+		"diplomata": "Diplomata",
+		"engenheiro": "Engineer",
+		"executivo": "Executive",
+		"explorador": "Explorador",
+		"experimento": "Experimento",
+		"fanaticoPorCriaturas": "Fanático por Criaturas",
+		"fotografo": "Fotógrafo",
+		"inventorParanormal": "Inventor Paranormal",
+		"investigador": "Investigator",
+		"jovemMistico": "Jovem Místico",
+		"legistaDoTurnoDaNoite": "Legista do Turno da Noite",
+		"lutador": "Fighter",
+		"magnata": "Tycoon",
+		"mateiro": "Mateiro",
+		"mercenario": "Mercenary",
+		"mergulhador": "Mergulhador",
+		"militar": "Military",
+		"motorista": "Motorista",
+		"nerdEntusiasta": "Nerd Entusiasta",
+		"operario": "Factory Worker",
+		"policial": "Police Officer",
+		"profetizado": "Profetizado",
+		"psicologo": "Psicólogo",
+		"religioso": "Religious",
+		"reporterInvestigativo": "Reporter Investigativo",
+		"servidorPublico": "Civil Servant",
+		"teóricoDaConspiracao": "Conspiracy Theorist",
+		"TI": "I.T.",
+		"trabalhadorRural": "Farmer",
+		"trambiqueiro": "Swindler",
+		"universitario": "University Student",
+		"vítima": "Victim"
+	},
+
+	"op.trilhasName": "Trails",
+	"op.trilhas": {
+		"agenteSecreto": "Secret Agent",
+		"aniquilador": "Annihilator",
+		"cacador": "Hunter",
+		"comandanteDeCampo": "Field Leader",
+		"monstruoso": "Monstrous",
+		"operacoesEspeciais": "Special Ops",
+		"tropaDeChoque": "Shock Trooper",
+		"guerreiro": "Warrior",
+		"infiltrador": "Infiltrator",
+		"atiradorDeElite": "Elite Sharpshooter",
+		"bibliotecario": "Librarian",
+		"medicoDeCampo": "Field Medic",
+		"muambeiro": "Muambeiro",
+		"negociador": "Negotiator",
+		"perseverante": "Perseverante",
+		"tecnico": "Tinkerer",
+		"conduite": "Conduit",
+		"exorcista": "Exorcist",
+		"flagelador": "Flagellator",
+		"graduado": "Graduated",
+		"intuitivo": "Intuitive",
+		"laminaParanormal": "Paranormal Blade",
+		"parapsicologo": "Parapsychologist",
+		"possuido": "Possessed",
+		"durao": "Badass",
+		"esperto": "Smart",
+		"esoterico": "Esoteric"
+	},
+
+	"op.weight": "Weight",
+	"op.defense": "Defense",
+	"op.dodge": "Dodge",
+
+	"op.deslocamento": "Movement",
+
+	"op.type": "Type",
+	"op.area": "Area",
+
+	"op.attributesItem": "Attributes",
+	"op.specificationsItemTab": "Specifications",
+	"op.combatItemTab": "Combat",
+	"op.description": "Description",
+	"op.goals": "Goals",
+	"op.quantity": "Quantity",
+	"op.space": "Space",
+	"op.category": "Category",
+	"op.preRequisite": "Pre-requisite",
+	"op.range": "Range",
+	"op.target": "Target",
+	"op.areaEffect": "Area Effect",
+	"op.resistance": "Resistance",
+	"op.studentForm": "Student Form",
+	"op.trueForm": "True Form",
+	"op.circle": "Circle",
+	"op.damageType": "Damage Type",
+	"op.weaponType": "Weapon Type",
+	"op.critical": "Critical",
+	"op.proficiency": "Proficiency",
+	"op.ammunitionType": "Ammunition Type",
+	"op.gripType": "Grip",
+	"op.duration": "Duration",
+	"op.subtypeWeapon": "Weapon Subtype",
+	"op.powerType": "Power Type",
+	"op.execution": "Execution",
+
+	"op.executionChoices": {
+		"free": "Livre",
+		"default": "Padrão",
+		"complete": "Completa",
+		"reaction": "Reação"
+	},
+
+	"op.weaponTypeChoices": {
+		"melee": "Melee",
+		"ranged": "Ranged"
+	},
+
+	"op.weaponSubTypeChoices": {
+		"throw": "Throwing Weapon",
+		"shoot": "Shooting Weapon",
+		"fire": "Firearm"
+	},
+
+	"op.weaponGripTypeChoices": {
+		"light": "Light Weapon",
+		"oneHand": "One Handed",
+		"twoHands": "Two Handed"
+	},
+
+	"op.weaponAmmunitionChoices": {
+		"shortBullets": "Short Bullets",
+		"longBullets": "Long Bullets",
+		"fuel": "Fuel",
+		"arrows": "Arrows",
+		"rocket": "Rockets",
+		"cartridge": "Cartridge"
+	},
+
+	"op.proficiencyChoices": {
+		"simpleWeapons": "Simple Weapons",
+		"tacticalWeapons": "Tactical Weapons",
+		"heavyWeapons": "Heavy Weapons"
+	},
+
+	"op.proficiencyChoicesAbbr": {
+		"simpleWeapons": "Simple",
+		"tacticalWeapons": "Tactical",
+		"heavyWeapons": "Heavy"
+	},
+
+	"op.damageTypeChoices": {
+		"cuttingDamage": "Cutting Damage (C)",
+		"impactDamage": "Impact Damage (I)",
+		"piercingDamage": "Piercing Damage (P)",
+		"ballisticDamage": "Ballistic Damage (B)"
+	},
+
+	"op.damageTypeAbv": {
+		"cuttingDamage": "Corte",
+		"impactDamage": "Impacto",
+		"piercingDamage": "Perfurante",
+		"ballisticDamage": "Balístico"
+	},
+
+	"op.powerTypeChoices": {
+		"class": "Poder de Classe",
+		"paranormal": "Poder Paranormal",
+		"path": "Habilidade de Trilha",
+		"ability": "Outra Habilidade"
+	},
+
+	"op.abilitiesAbv": {
+		"class": "Poderes de Classe",
+		"paranormal": "Poderes Paranormais",
+		"path": "Habilidades de Trilha",
+		"ability": "Outras Habilidades"
+	},
+
+	"op.improvised": "Improvised",
+	"op.throwable": "Throwable",
+	"op.agile": "Agile",
+	"op.automatic": "Automatic",
+	"op.adaptableGrip": "Adaptable Grip",
+	"op.pistolBlow": "Pistol Blow",
+
+	"op.rangeChoices": {
+		"personal": "Personal",
+		"touch": "Touch",
+		"short": "Short",
+		"medium": "Medium",
+		"long": "Long",
+		"extreme": "Extreme",
+		"unlimited": "Unlimited"
+	},
+
+	"op.targetChoices": {
+		"people": "People",
+		"creatures": "Being(s)",
+		"animals": "Animals",
+		"weapons": "Weapons",
+		"equipment": "Equipments",
+		"area": "Area"
+	},
+
+	"op.areaChoices": {
+		"cone": "Cone",
+		"cube": "Cube",
+		"sphere": "Sphere",
+		"line": "Line"
+	},
+
+	"op.areaTypeChoices": {
+		"radius": "Radius",
+		"diameter": "Diameter"
+	},
+	"op.areaLabelSphereCone": "{name} with {size}m {type}",
+	"op.areaLabelCubeLine": "{name} with {size}m",
+
+	"op.durationChoices": {
+		"instantaneous": "Instantaneous",
+		"scene": "Scene",
+		"sustained": "Sustained",
+		"setDuration": "SetDuration",
+		"permanent": "Permanent"
+	},
+
+	"op.resistanceChoices": {
+		"nullifies": "Nullifies",
+		"discredits": "Discredits",
+		"partial": "Partial",
+		"reducesByHalf": "Red. by half"
+	},
+
+	"op.elementChoices": {
+		"blood": "Blood",
+		"death": "Death",
+		"knowledge": "Knowledge",
+		"energy": "Energy",
+		"fear": "Fear"
+	},
+
+	"op.Notes": "Update Notes",
+	"op.Issues": "Issues",
+	"op.Wiki": "Wiki",
+	"op.Discord": "Discord of System",
+	"op.Credits": "Credits & Licenses",
+	"op.Twitter": "Twitter",
+
+	"op.damage": "Damage",
+	"op.rollDmg": "Roll Damage",
+	"op.rollAtk": "Roll Attack",
+
+	"op.Advantage": "Advantage (+1d20)",
+	"op.Normal": "Roll Dice",
+	"op.Disadvantage": "Disadvantage (-1d20)",
+	"op.SkillPromptTitle": "{skill} Test with {ability}",
+	"op.AttributePromptTitle": "{attribute} Test",
+	"op.RollMode": "Roll Mode",
+	"op.RollConfiguration.Configuration": "Roll Configuration",
+	"op.RollSituationalBonus": "Situational Roll",
+	"op.Formula": "Formula",
+	"op.RollAttribute": "Roll Atribute",
+
+	"KEYBINDINGS": {
+		"op": {
+			"SkipDialogNormal": "Skip Dialog",
+			"SkipDialogAdvantage": "Skip Dialog (roll with advantage)",
+			"SkipDialogDisadvantage": "Skip Dialog (roll with disadvantage)"
+		}
+	},
+
+	"EFFECT": {
+		"TabDuration": "Duration"
+	}
+}

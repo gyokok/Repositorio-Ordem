@@ -1,0 +1,591 @@
+{
+	"Actor": {
+		"types": ["agent", "threat"],
+		"templates": {
+			"base": {
+				"PV": {
+					"value": 5,
+					"max": 10
+				},
+				"SAN": {
+					"value": 5,
+					"max": 5
+				},
+				"PE": {
+					"value": 5,
+					"max": 5,
+					"perRound": 1
+				},
+				"PD": {
+					"value": 5,
+					"max": 5,
+					"perRound": 1
+				},
+				"NEX": {
+					"value": 1
+				},
+				"stage": {
+					"value": 1
+				},
+				"nivel": {
+					"value": 1
+				},
+				"defense": {
+					"value": 10,
+					"bonus": 0,
+					"dodge": 0
+				},
+				"desloc": {
+					"value": 9,
+					"bonus": 0
+				},
+				"spaces": {
+					"bonus": {
+						"value": 0,
+						"max": 0
+					}
+				},
+				"biography": "A personalidade, aparência e história do seu personagem aqui.",
+				"goals": "Os seus objetivos aqui."
+			}
+		},
+		"agent": {
+			"templates": ["base", "NEX"],
+			"class": "",
+			"origin": "",
+			"trilha": "",
+			"patent": {
+				"name": "",
+				"prestigePoints": 0,
+				"creditLimit": "",
+				"itemLimit1": null,
+				"itemLimit2": null,
+				"itemLimit3": null,
+				"itemLimit4": null
+			},
+			"skills": {
+				"acrobatics": {
+					"value": 0,
+					"attr": ["dex", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": true,
+						"trained": false
+					}
+				},
+				"animal": {
+					"value": 0,
+					"attr": ["pre", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": true
+					}
+				},
+				"arts": {
+					"value": 0,
+					"attr": ["pre", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false
+					}
+				},
+				"athleticism": {
+					"value": 0,
+					"attr": ["str", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false
+					}
+				},
+				"relevance": {
+					"value": 0,
+					"attr": ["int", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false
+					}
+				},
+				"sciences": {
+					"value": 0,
+					"attr": ["int", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false
+					}
+				},
+				"crime": {
+					"value": 0,
+					"attr": ["dex", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": true,
+						"trained": true
+					}
+				},
+				"diplomacy": {
+					"value": 0,
+					"attr": ["pre", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false
+					}
+				},
+				"deception": {
+					"value": 0,
+					"attr": ["pre", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false
+					}
+				},
+				"resilience": {
+					"value": 0,
+					"attr": ["vit", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false
+					}
+				},
+				"stealth": {
+					"value": 0,
+					"attr": ["dex", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": true,
+						"trained": false
+					}
+				},
+				"initiative": {
+					"value": 0,
+					"attr": ["dex", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false
+					}
+				},
+				"intimidation": {
+					"value": 0,
+					"attr": ["pre", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false
+					}
+				},
+				"intuition": {
+					"value": 0,
+					"attr": ["pre", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false
+					}
+				},
+				"investigation": {
+					"value": 0,
+					"attr": ["int", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false
+					}
+				},
+				"fighting": {
+					"value": 0,
+					"attr": ["str", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false
+					}
+				},
+				"medicine": {
+					"value": 0,
+					"attr": ["int", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false
+					}
+				},
+				"occultism": {
+					"value": 0,
+					"attr": ["int", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": true
+					}
+				},
+				"perception": {
+					"value": 0,
+					"attr": ["pre", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false
+					}
+				},
+				"driving": {
+					"value": 0,
+					"attr": ["dex", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": true
+					}
+				},
+				"aim": {
+					"value": 0,
+					"attr": ["dex", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false
+					}
+				},
+				"reflexes": {
+					"value": 0,
+					"attr": ["dex", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false
+					}
+				},
+				"religion": {
+					"value": 0,
+					"attr": ["pre", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": true
+					}
+				},
+				"survival": {
+					"value": 0,
+					"attr": ["int", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false
+					}
+				},
+				"tactics": {
+					"value": 0,
+					"attr": ["int", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": true
+					}
+				},
+				"technology": {
+					"value": 0,
+					"attr": ["int", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": true
+					}
+				},
+				"will": {
+					"value": 0,
+					"attr": ["pre", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false
+					}
+				},
+				"freeSkill": {
+					"value": 0,
+					"attr": ["int", 1],
+					"degree": {
+						"label": "untrained",
+						"value": 0
+					},
+					"conditions": {
+						"load": false,
+						"trained": false,
+						"open": true
+					}
+				}
+			},
+			"attributes": {
+				"dex": {
+					"value": 1,
+					"bonus": 0
+				},
+				"int": {
+					"value": 1,
+					"bonus": 0
+				},
+				"vit": {
+					"value": 1,
+					"bonus": 0
+				},
+				"pre": {
+					"value": 1,
+					"bonus": 0
+				},
+				"str": {
+					"value": 1,
+					"bonus": 0
+				}
+			}
+		},
+		"threat": {
+			"templates": [],
+			"attributes": {
+				"hp": {
+					"value": 0,
+					"max": 10
+				},
+				"dex": { "value": 0 },
+				"int": { "value": 0 },
+				"pre": { "value": 0 },
+				"str": { "value": 0 },
+				"vit": { "value": 0 },
+				"movement": {
+					"walk": 0,
+					"unit": "m",
+					"squares": 0
+				},
+				"vd": { "value": 0 }
+			},
+			
+			"attacks": {},
+			
+			"skills": {
+				"fighting": { "value": 0, "attr": ["str", 1], "degree": { "label": "untrained", "value": 0 } },
+				"aim": { "value": 0, "attr": ["dex", 1], "degree": { "label": "untrained", "value": 0 } },
+				"resilience": { "value": 0, "attr": ["vit", 1], "degree": { "label": "untrained", "value": 0 } },
+				"reflexes": { "value": 0, "attr": ["dex", 1], "degree": { "label": "untrained", "value": 0 } },
+				"will": { "value": 0, "attr": ["pre", 1], "degree": { "label": "untrained", "value": 0 } },
+				"initiative": { "value": 0, "attr": ["dex", 1], "degree": { "label": "untrained", "value": 0 } },
+				"perception": { "value": 0, "attr": ["pre", 1], "degree": { "label": "untrained", "value": 0 } },
+				"freeSkill": { "value": 0, "name": "", "attr": ["int", 1], "degree": { "label": "untrained", "value": 0 } }
+			},
+			
+			"elements": {
+				"main": "",
+				"others": ""
+			},
+			"abilities": [],
+			"size": "",
+			"disturbingPresence": {
+				"dt": 0,
+				"mentalDamage": "",
+				"immuneNex": 0
+			},
+			"senses": [],
+			"defense": {
+				"value": "",
+				"skillResistances": [],
+				"damageResistances": []
+			},
+			"vulnerabilities": [],
+			"actions": [],
+			"details": {
+				"description": "",
+				"fearRiddle": ""
+			},
+			"temporary": {
+				"abilities": "",
+				"senses": "",
+				"defense": {
+					"skillResistances": "",
+					"damageResistances": ""
+				},
+				"vulnerabilities": "",
+				"actions": "",
+				"characteristics": ""
+			}
+		}
+	},
+	"Item": {
+		"types": ["armament", "generalEquipment", "protection", "ability", "ritual"],
+		"templates": {
+			"base": {
+				"description": "A descrição do seu item aqui.",
+				"weight": 1,
+				"category": 0,
+				"using": {
+					"state": true,
+					"class": "fas"
+				}
+			}
+		},
+		"armament": {
+			"templates": ["base"],
+			"quantity": 1,
+			"proficiency": 0,
+			"types": {
+				"rangeType": {
+					"name": "",
+					"subRangeType": ""
+				},
+				"ammunitionType": "",
+				"gripType": ""
+			},
+			"critical": "",
+			"range": "",
+			"formulas": {
+				"attack": {
+					"formula": "1d4",
+					"attr": "",
+					"skill": "",
+					"bonus": ""
+				},
+				"damage": {
+					"formula": "1d4",
+					"attr": "",
+					"bonus": "",
+					"type": "",
+					"parts": []
+				},
+				"extraFormula": "1d4"
+			},
+			"penalty": "",
+			"conditions": {
+				"improvised": false,
+				"throwable": false,
+				"agile": false,
+				"automatic": false,
+				"adaptableGrip": false,
+				"pistolBlow": false
+			}
+		},
+		"protection": {
+			"templates": ["base"],
+			"defense": 0,
+			"penalty": "",
+			"quantity": 1
+		},
+		"generalEquipment": {
+			"templates": ["base"],
+			"type": "",
+			"quantity": 1
+		},
+		"ammunition": {
+			"templates": ["base"],
+			"type": "",
+			"defense": 0,
+			"quantity": 1
+		},
+		"ritual": {
+			"description": "A descrição do seu ritual aqui.",
+			"circle": 1,
+			"element": "",
+			"target": "",
+			"execution": "",
+			"range": "",
+			"area": {
+				"name": "",
+				"size": "",
+				"type": ""
+			},
+			"duration": "",
+			"resistance": "",
+			"studentForm": false,
+			"trueForm": false
+		},
+		"ability": {
+			"id": 0,
+			"abilityType": "",
+			"preRequisite": "",
+			"description": "Your text here."
+		}
+	}
+}
