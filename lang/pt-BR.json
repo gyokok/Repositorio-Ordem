@@ -268,6 +268,7 @@
 	"op.duration": "Duração",
 	"op.subtypeWeapon": "Subtipo de Arma",
 	"op.powerType": "Tipo de Habilidade",
+	"op.cost": "Custo",
 	"op.execution": "Execução",
 	"op.element": "Elemento",
 
@@ -422,6 +423,7 @@
 		"energy": "Energia",
 		"fear": "Medo"
 	},
+
 
 	"op.Notes": "Notas de Atualização",
 	"op.Issues": "Problemas",

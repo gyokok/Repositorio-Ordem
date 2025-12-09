@@ -198,8 +198,27 @@ export class OrdemItem extends Item {
 		if (!this.system.formulas.attack.attr || !this.system.formulas.attack.skill)
 			throw new Error('This Item does not have a formula to roll!');
 
-		const attack = this.system.formulas.attack;
-		const skill = this.parent.system.skills[attack.skill];
+		// 2. Recuperar valores do Ator
+		const attributes = this.actor.system.attributes;
+		const skills = this.actor.system.skills;
+
+		const attrValue = attributes[attrKey]?.value || 0;
+		const skillObj = skills[skillKey];
+		const skillBonus = (skillObj?.degree?.value ?? skillObj?.value) || 0;
+        
+        // --- CORREÇÃO: Incluir Modificador de Efeito ---
+        const skillMod = skillObj?.mod || 0;
+
+		// 3. Montar Fórmula
+		const { threshold } = this._parseCritical();
+		let diceFormula = attrValue > 0 ? `${attrValue}d20kh1` : "2d20kl1";
+		diceFormula += `cs>=${threshold}`;
+
+		// 4. Fórmula Final (Adicionado skillMod)
+		const formula = `${diceFormula} + ${skillBonus} + ${skillMod} + ${itemBonus}`;
+		
+		const skillLabel = game.i18n.localize(`op.skill.${skillKey}`) || skillKey;
+		await this._performRoll(formula, `Ataque: ${this.name} <span style="font-size:0.8em; color:gray">(${skillLabel})</span>`);
 		let attribute = this.parent.system.attributes[attack.attr];
 		let rollMode = 'kh';
 

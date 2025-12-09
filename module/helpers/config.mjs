@@ -292,6 +292,11 @@ op.dropdownExecution = {
 	reaction: 'op.executionChoices.reaction',
 };
 
+op.dropdownCostType = {
+    PE: "PE",
+    PD: "PD",
+};
+
 // TODO: Cogitar mudar os valores para números por conta dos nomes em inglês talvez estarem incorretos no futuro.
 /**
  * The set of Ability Scores used within the system.

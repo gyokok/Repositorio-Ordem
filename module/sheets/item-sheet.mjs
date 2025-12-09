@@ -10,6 +10,10 @@ const { api, sheets } = foundry.applications;
  * @extends {ItemSheet}
  */
 export class OrdemItemSheet extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2) {
+	
+    // --- CORREÇÃO: Declaração movida para o topo ---
+    #dragDrop;
+
 	/** */
 	constructor(options = {}) {
 		super(options);
@@ -122,13 +126,12 @@ export class OrdemItemSheet extends api.HandlebarsApplicationMixin(sheets.ItemSh
 			attackSkills: CONFIG.op.attackSkills,
 			// Ritual's Dropdowns
 			optionExecution: CONFIG.op.dropdownExecution,
+            // --- NOVO: Opções de Tipo de Custo (PE/PD) ---
+            optionCostType: CONFIG.op.dropdownCostType,
 			// Item's Radiobox
 			categories: CONFIG.op.categories,
 			degree: CONFIG.op.ritualDegree,
 		});
-
-		// https://foundryvtt.com/api/classes/foundry.abstract.Document.html#updateDocuments
-		// https://foundryvtt.com/api/classes/foundry.abstract.Document.html#deleteDocuments
 
 		return context;
 	}
@@ -242,26 +245,14 @@ export class OrdemItemSheet extends api.HandlebarsApplicationMixin(sheets.ItemSh
    */
 	_onRender(context, options) {
 		this.#dragDrop.forEach((d) => d.bind(this.element));
-		// You may want to add other special handling here
-		// Foundry comes with a large number of utility classes, e.g. SearchFilter
-		// That you may want to implement yourself.
 	}
 
 	/** ************
    *
-   *   ACTIONS
+   * ACTIONS
    *
    **************/
 
-	/**
-   * Handle changing a Document's image.
-   *
-   * @this BoilerplateItemSheet
-   * @param {PointerEvent} event   The originating click event
-   * @param {HTMLElement} target   The capturing HTML element which defined a [data-action]
-   * @returns {Promise}
-   * @protected
-   */
 	static async #onEditImage(event, target) {
 		const attr = target.dataset.edit;
 		const current = foundry.utils.getProperty(this.document, attr);
@@ -281,87 +272,37 @@ export class OrdemItemSheet extends api.HandlebarsApplicationMixin(sheets.ItemSh
 		return fp.browse();
 	}
 
-	/**
-   * Renders an embedded document's sheet
-   *
-   * @this BoilerplateItemSheet
-   * @param {PointerEvent} event   The originating click event
-   * @param {HTMLElement} target   The capturing HTML element which defined a [data-action]
-   * @protected
-   */
 	static async #viewEffect(event, target) {
 		const effect = this._getEffect(target);
 		effect.sheet.render(true);
 	}
 
-	/**
-   * Handles item deletion
-   *
-   * @this BoilerplateItemSheet
-   * @param {PointerEvent} event   The originating click event
-   * @param {HTMLElement} target   The capturing HTML element which defined a [data-action]
-   * @protected
-   */
 	static async #deleteEffect(event, target) {
 		const effect = this._getEffect(target);
 		await effect.delete();
 	}
 
-	/**
-   * Handle creating a new Owned Item or ActiveEffect for the actor using initial data defined in the HTML dataset
-   *
-   * @this BoilerplateItemSheet
-   * @param {PointerEvent} event   The originating click event
-   * @param {HTMLElement} target   The capturing HTML element which defined a [data-action]
-   * @private
-   */
 	static async #createEffect(event, target) {
-		// Retrieve the configured document class for ActiveEffect
 		const aeCls = getDocumentClass('ActiveEffect');
-		// Prepare the document creation data by initializing it a default name.
-		// As of v12, you can define custom Active Effect subtypes just like Item subtypes if you want
 		const effectData = {
 			name: aeCls.defaultName({
-				// defaultName handles an undefined type gracefully
 				type: target.dataset.type,
 				parent: this.item,
 			}),
 		};
-		// Loop through the dataset and add it to our effectData
 		for (const [dataKey, value] of Object.entries(target.dataset)) {
-			// These data attributes are reserved for the action handling
 			if (['action', 'documentClass'].includes(dataKey)) continue;
-			// Nested properties require dot notation in the HTML, e.g. anything with `system`
-			// An example exists in spells.hbs, with `data-system.spell-level`
-			// which turns into the dataKey 'system.spellLevel'
 			foundry.utils.setProperty(effectData, dataKey, value);
 		}
-
-		// Finally, create the embedded document!
 		await aeCls.create(effectData, { parent: this.item });
 	}
 
-	/**
-   * Determines effect parent to pass to helper
-   *
-   * @this BoilerplateItemSheet
-   * @param {PointerEvent} event   The originating click event
-   * @param {HTMLElement} target   The capturing HTML element which defined a [data-action]
-   * @private
-   */
 	static async #toggleEffect(event, target) {
 		const effect = this._getEffect(target);
 		await effect.update({ disabled: !effect.disabled });
 	}
 
 	/** Helper Functions */
-
-	/**
-   * Fetches the row with the data for the rendered embedded document
-   *
-   * @param {HTMLElement} target  The element with the action
-   * @returns {HTMLLIElement} The document's row
-   */
 	_getEffect(target) {
 		const li = target.closest('.effect');
 		return this.item.effects.get(li?.dataset?.effectId);
@@ -372,200 +313,10 @@ export class OrdemItemSheet extends api.HandlebarsApplicationMixin(sheets.ItemSh
    * DragDrop
    *
    */
-
-	/**
-   * Define whether a user is able to begin a dragstart workflow for a given drag selector
-   * @param {string} selector       The candidate HTML selector for dragging
-   * @returns {boolean}             Can the current user drag this selector?
-   * @protected
-   */
-	_canDragStart(selector) {
-		// game.user fetches the current user
-		return this.isEditable;
-	}
-
-	/**
-   * Define whether a user is able to conclude a drag-and-drop workflow for a given drop selector
-   * @param {string} selector       The candidate HTML selector for the drop target
-   * @returns {boolean}             Can the current user drop on this selector?
-   * @protected
-   */
-	_canDragDrop(selector) {
-		// game.user fetches the current user
-		return this.isEditable;
-	}
-
-	/**
-   * Callback actions which occur at the beginning of a drag start workflow.
-   * @param {DragEvent} event       The originating DragEvent
-   * @protected
-   */
-	_onDragStart(event) {
-		const li = event.currentTarget;
-		if ('link' in event.target.dataset) return;
-
-		let dragData = null;
-
-		// Active Effect
-		if (li.dataset.effectId) {
-			const effect = this.item.effects.get(li.dataset.effectId);
-			dragData = effect.toDragData();
-		}
-
-		if (!dragData) return;
-
-		// Set data transfer
-		event.dataTransfer.setData('text/plain', JSON.stringify(dragData));
-	}
-
-	/**
-   * Callback actions which occur when a dragged element is over a drop target.
-   * @param {DragEvent} event       The originating DragEvent
-   * @protected
-   */
-	_onDragOver(event) {}
-
-	/**
-   * Callback actions which occur when a dragged element is dropped on a target.
-   * @param {DragEvent} event       The originating DragEvent
-   * @protected
-   */
-	async _onDrop(event) {
-		const data = TextEditor.getDragEventData(event);
-		const item = this.item;
-		const allowed = Hooks.call('dropItemSheetData', item, this, data);
-		if (allowed === false) return;
-
-		// Handle different data types
-		switch (data.type) {
-		case 'ActiveEffect':
-			return this._onDropActiveEffect(event, data);
-		case 'Actor':
-			return this._onDropActor(event, data);
-		case 'Item':
-			return this._onDropItem(event, data);
-		case 'Folder':
-			return this._onDropFolder(event, data);
-		}
-	}
-
-	/* -------------------------------------------- */
-
-	/**
-   * Handle the dropping of ActiveEffect data onto an Actor Sheet
-   * @param {DragEvent} event                  The concluding DragEvent which contains drop data
-   * @param {object} data                      The data transfer extracted from the event
-   * @returns {Promise<ActiveEffect|boolean>}  The created ActiveEffect object or false if it couldn't be created.
-   * @protected
-   */
-	async _onDropActiveEffect(event, data) {
-		const aeCls = getDocumentClass('ActiveEffect');
-		const effect = await aeCls.fromDropData(data);
-		if (!this.item.isOwner || !effect) return false;
-
-		if (this.item.uuid === effect.parent?.uuid)
-			return this._onEffectSort(event, effect);
-		return aeCls.create(effect, { parent: this.item });
-	}
-
-	/**
-   * Sorts an Active Effect based on its surrounding attributes
-   *
-   * @param {DragEvent} event
-   * @param {ActiveEffect} effect
-   */
-	_onEffectSort(event, effect) {
-		const effects = this.item.effects;
-		const dropTarget = event.target.closest('[data-effect-id]');
-		if (!dropTarget) return;
-		const target = effects.get(dropTarget.dataset.effectId);
-
-		// Don't sort on yourself
-		if (effect.id === target.id) return;
-
-		// Identify sibling items based on adjacent HTML elements
-		const siblings = [];
-		for (const el of dropTarget.parentElement.children) {
-			const siblingId = el.dataset.effectId;
-			if (siblingId && siblingId !== effect.id)
-				siblings.push(effects.get(el.dataset.effectId));
-		}
-
-		// Perform the sort
-		const sortUpdates = SortingHelpers.performIntegerSort(effect, {
-			target,
-			siblings,
-		});
-		const updateData = sortUpdates.map((u) => {
-			const update = u.update;
-			update._id = u.target._id;
-			return update;
-		});
-
-		// Perform the update
-		return this.item.updateEmbeddedDocuments('ActiveEffect', updateData);
-	}
-
-	/* -------------------------------------------- */
-
-	/**
-   * Handle dropping of an Actor data onto another Actor sheet
-   * @param {DragEvent} event            The concluding DragEvent which contains drop data
-   * @param {object} data                The data transfer extracted from the event
-   * @returns {Promise<object|boolean>}  A data object which describes the result of the drop, or false if the drop was
-   *                                     not permitted.
-   * @protected
-   */
-	async _onDropActor(event, data) {
-		if (!this.item.isOwner) return false;
-	}
-
-	/* -------------------------------------------- */
-
-	/**
-   * Handle dropping of an item reference or item data onto an Actor Sheet
-   * @param {DragEvent} event            The concluding DragEvent which contains drop data
-   * @param {object} data                The data transfer extracted from the event
-   * @returns {Promise<Item[]|boolean>}  The created or updated Item instances, or false if the drop was not permitted.
-   * @protected
-   */
-	async _onDropItem(event, data) {
-		if (!this.item.isOwner) return false;
-	}
-
-	/* -------------------------------------------- */
-
-	/**
-   * Handle dropping of a Folder on an Actor Sheet.
-   * The core sheet currently supports dropping a Folder of Items to create all items as owned items.
-   * @param {DragEvent} event     The concluding DragEvent which contains drop data
-   * @param {object} data         The data transfer extracted from the event
-   * @returns {Promise<Item[]>}
-   * @protected
-   */
-	async _onDropFolder(event, data) {
-		if (!this.item.isOwner) return [];
-	}
-
-	/** The following pieces set up drag handling and are unlikely to need modification  */
-
-	/**
-   * Returns an array of DragDrop instances
-   * @type {DragDrop[]}
-   */
 	get dragDrop() {
 		return this.#dragDrop;
 	}
 
-	// This is marked as private because there's no real need
-	// for subclasses or external hooks to mess with it directly
-	#dragDrop;
-
-	/**
-   * Create drag-and-drop workflow handlers for this Application
-   * @returns {DragDrop[]}     An array of DragDrop handlers
-   * @private
-   */
 	#createDragDropHandlers() {
 		return this.options.dragDrop.map((d) => {
 			d.permissions = {
@@ -580,31 +331,117 @@ export class OrdemItemSheet extends api.HandlebarsApplicationMixin(sheets.ItemSh
 			return new DragDrop(d);
 		});
 	}
+    
+	_canDragStart(selector) {
+		return this.isEditable;
+	}
+
+	_canDragDrop(selector) {
+		return this.isEditable;
+	}
+
+	_onDragStart(event) {
+		const li = event.currentTarget;
+		if ('link' in event.target.dataset) return;
+
+		let dragData = null;
+
+		if (li.dataset.effectId) {
+			const effect = this.item.effects.get(li.dataset.effectId);
+			dragData = effect.toDragData();
+		}
+
+		if (!dragData) return;
+
+		event.dataTransfer.setData('text/plain', JSON.stringify(dragData));
+	}
+
+	_onDragOver(event) {}
+
+	async _onDrop(event) {
+		const data = TextEditor.getDragEventData(event);
+		const item = this.item;
+		const allowed = Hooks.call('dropItemSheetData', item, this, data);
+		if (allowed === false) return;
+
+		switch (data.type) {
+		case 'ActiveEffect':
+			return this._onDropActiveEffect(event, data);
+		case 'Actor':
+			return this._onDropActor(event, data);
+		case 'Item':
+			return this._onDropItem(event, data);
+		case 'Folder':
+			return this._onDropFolder(event, data);
+		}
+	}
+
+	async _onDropActiveEffect(event, data) {
+		const aeCls = getDocumentClass('ActiveEffect');
+		const effect = await aeCls.fromDropData(data);
+		if (!this.item.isOwner || !effect) return false;
+
+		if (this.item.uuid === effect.parent?.uuid)
+			return this._onEffectSort(event, effect);
+		return aeCls.create(effect, { parent: this.item });
+	}
+
+	_onEffectSort(event, effect) {
+		const effects = this.item.effects;
+		const dropTarget = event.target.closest('[data-effect-id]');
+		if (!dropTarget) return;
+		const target = effects.get(dropTarget.dataset.effectId);
+
+		if (effect.id === target.id) return;
+
+		const siblings = [];
+		for (const el of dropTarget.parentElement.children) {
+			const siblingId = el.dataset.effectId;
+			if (siblingId && siblingId !== effect.id)
+				siblings.push(effects.get(el.dataset.effectId));
+		}
+
+		const sortUpdates = SortingHelpers.performIntegerSort(effect, {
+			target,
+			siblings,
+		});
+		const updateData = sortUpdates.map((u) => {
+			const update = u.update;
+			update._id = u.target._id;
+			return update;
+		});
+
+		return this.item.updateEmbeddedDocuments('ActiveEffect', updateData);
+	}
+
+	async _onDropActor(event, data) {
+		if (!this.item.isOwner) return false;
+	}
+
+	async _onDropItem(event, data) {
+		if (!this.item.isOwner) return false;
+	}
+
+	async _onDropFolder(event, data) {
+		if (!this.item.isOwner) return [];
+	}
 
 	/* -------------------------------------------- */
 
-	/**
-	 * Add or remove a damage part from the damage formula.
-	 * @param {Event} event             The original click event.
-	 * @returns {Promise<OrdemItemSheet>|null}  Item with updates applied.
-	 * @private
-	 */
 	static async #onDamageControl(event, target) {
 		event.preventDefault();
 		const a = target;
 
-		// Add new damage component
 		if (a.classList.contains('add-damage')) {
-			await this._onSubmitForm(this.options.form, event); // Submit any unsaved changes
+			await this._onSubmitForm(this.options.form, event); 
 			const damage = this.item.system.formulas.damage;
 			return this.item.update({
 				'system.formulas.damage.parts': damage.parts.concat([['', '']]),
 			});
 		}
 
-		// Remove a damage component
 		if (a.classList.contains('delete-damage')) {
-			await this._onSubmitForm(this.options.form, event); // Submit any unsaved changes
+			await this._onSubmitForm(this.options.form, event); 
 			const li = a.closest('.damage-formula');
 			const damage = foundry.utils.deepClone(this.item.system.formulas.damage);
 			damage.parts.splice(Number(li.dataset.damagePart), 1);
@@ -613,14 +450,13 @@ export class OrdemItemSheet extends api.HandlebarsApplicationMixin(sheets.ItemSh
 	}
 
 	/* -------------------------------------------- */
-	/*  Form Submission                             */
+	/* Form Submission                             */
 	/* -------------------------------------------- */
 
 	/** @inheritDoc */
 	_processSubmitData(event, form, submitData) {
 		const clone = this.document.clone(foundry.utils.deepClone(submitData));
 
-		// Handle Damage array
 		const damage = clone.system?.formulas?.damage;
 		if (damage) {
 			foundry.utils.setProperty(submitData, 'system.formulas.damage.parts', 
@@ -629,12 +465,8 @@ export class OrdemItemSheet extends api.HandlebarsApplicationMixin(sheets.ItemSh
 		super._processSubmitData(event, form, submitData);
 	}
 
-	/* -------------------------------------------- */
-
 	/** @inheritdoc */
 	async _onSubmitForm(...args) {
 		await super._onSubmitForm(...args);
 	}
-
-	/* -------------------------------------------- */
 }

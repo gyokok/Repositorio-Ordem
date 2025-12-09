@@ -585,7 +585,10 @@
 			"id": 0,
 			"abilityType": "",
 			"preRequisite": "",
-			"description": "Your text here."
+			"description": "Your text here.",
+			"cost": "",
+			"costType": "PE",
+			"activation": ""
 		}
 	}
 }

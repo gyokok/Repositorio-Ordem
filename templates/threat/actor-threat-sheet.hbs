@@ -1,10 +1,16 @@
 <section class="sheet-body flexcol" autocomplete="off">
-	{{!-- Header --}}
+    {{!-- CSS INLINE PARA ABAS --}}
+    <style>
+        .sheet-body .tab { display: none; }
+        .sheet-body .tab.active { display: block; }
+        .sheet-tabs .item.active { text-decoration: underline; font-weight: bold; text-shadow: 0 0 5px var(--color-shadow-primary); }
+    </style>
+
+	{{!-- HEADER --}}
 	<header class="sheet-header-op">
 		<div class="header-identify align-center flex" style="flex-wrap: wrap;">
 			<img class="profile-img" src="{{actor.img}}" data-edit="img" data-action="onEditImage" title="{{actor.name}}" height="64" width="64" />
 			
-            {{!-- Nome e VD --}}
             <div class="flexcol" style="flex: 1;">
                 <div class="flexrow flex-center">
                     <h1 class="charname" style="margin: 0; flex: 1;">
@@ -18,23 +24,18 @@
                     </div>
                 </div>
 
-                
-                {{!-- SEÇÃO: PRESENÇA PERTURBADORA (ATUALIZADA) --}}
+                {{!-- PRESENÇA PERTURBADORA --}}
                 <div class="disturbing-presence flexrow flex-center" style="background: rgba(0, 0, 0, 0.05); border-radius: 5px; padding: 2px 5px; margin-top: 5px; gap: 10px;">
                     <label style="font-weight: bold; font-size: 11px; white-space: nowrap; color: #333;">Presença Perturbadora:</label>
-                    
                     <div class="flexrow flex-center" style="gap: 5px; flex: 0 0 auto;">
                         <label style="font-size: 10px; color: #555;">DT</label>
                         <input type="number" name="system.disturbingPresence.dt" value="{{system.disturbingPresence.dt}}" 
                                style="height: 18px; font-size: 11px; width: 30px; text-align: center;" placeholder="0">
                     </div>
-
                     <div class="flexrow flex-center" style="gap: 5px; flex: 0 0 auto;">
                         <label style="font-size: 10px; color: #555;">Dano</label>
                         <input type="text" name="system.disturbingPresence.mentalDamage" value="{{system.disturbingPresence.mentalDamage}}" 
                                style="height: 18px; font-size: 11px; width: 60px; text-align: center;" placeholder="Ex: 2d6">
-                        
-                        {{!-- BOTÃO DE ROLAGEM --}}
                         <i class="fas fa-brain rollable pointer" data-action="onRollMentalDamage" title="Rolar Dano Mental" 
                            style="color: #6a0dad; font-size: 12px; margin-left: 2px;"></i>
                     </div>
@@ -43,7 +44,6 @@
 		</div>
 
 		<div class="header-fields">
-            {{!-- PV --}}
 			<div class="resources flexrow">
 				<div class="resource flex-group-center">
 					<label class="resource-label"> {{localize 'op.PV'}} </label>
@@ -64,7 +64,7 @@
 				<div class="resource flex-group-center"><label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="str">{{localize 'op.attStr'}}</label><div class="resource-content flexrow flex-center flex-between"><input type="text" name="system.attributes.str.value" value="{{system.attributes.str.value}}" data-dtype="Number" /></div></div>
 			</div>
 
-            {{!-- Perícias (4x2) --}}
+            {{!-- Perícias --}}
             <div class="resources threat-skills-container" style="margin-top: 5px; display: grid; grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; gap: 8px 10px; justify-content: space-around;">
                 {{#each threatSkills as |skill|}}
                 <div class="resource flex-group-center" style="display: flex; flex-direction: column; align-items: center; justify-content: flex-end; width: 100%;">
@@ -92,7 +92,6 @@
                 {{/each}}
             </div>
 
-            {{!-- Defesa e Deslocamento --}}
 			<div class="resources flexrow">
 				<div class="resource flex-group-center">
 					<label class="resource-label">{{localize 'op.defense'}}</label>
@@ -110,10 +109,18 @@
 		</div>
 	</header>
 
-    {{!-- ÁREA DE CONTEÚDO (SEM ABAS) --}}
+    {{!-- NAVEGAÇÃO --}}
+    <nav class="sheet-tabs tabs" data-group="primary">
+        {{#each tabs as |tab|}}
+        <a class="item {{tab.cssClass}}" data-action="onTab" data-tab="{{tab.id}}">{{tab.label}}</a>
+        {{/each}}
+    </nav>
+
+    {{!-- CONTEÚDO PRINCIPAL --}}
     <div class="sheet-main-content">
-        {{!-- Lista de Ataques --}}
-        <div class="attacks-section" style="margin-top: 10px;">
+        
+        {{!-- ABA DE ATAQUES --}}
+        <div class="tab attacks {{#ifEquals activeTab 'attacks'}}active{{/ifEquals}}" data-group="primary" data-tab="attacks">
             <ol class="items-list">
                 <li class="item flexrow items-header">
                     <div class="item-name">Ataque / Arma</div>
@@ -138,11 +145,11 @@
                         </div>
                         <h4>{{item.name}}</h4>
                     </div>
-                    <div class="item-formula item-prop" style="flex: 0 0 100px; text-align: center;">
-                        {{item.system.formulas.attack.formula}} + {{item.system.formulas.attack.bonus}}
+                    <div class="item-formula item-prop" style="flex: 0 0 100px; text-align: center; font-size: 11px;">
+                        {{item.attackLabel}}
                     </div>
-                    <div class="item-formula item-prop" style="flex: 0 0 150px; text-align: center;">
-                        {{item.system.formulas.damage.formula}} ({{item.system.formulas.damage.type}})
+                    <div class="item-formula item-prop" style="flex: 0 0 150px; text-align: center; font-size: 11px;">
+                        {{item.damageLabel}}
                     </div>
                     <div class="item-controls">
                         <a class="item-control item-edit" data-action="viewDoc" title="Editar"><i class="fas fa-edit"></i></a>
@@ -152,11 +159,125 @@
                 {{else}}
                 <li class="item flexrow">
                     <div class="item-name" style="padding: 10px; color: #777;">
-                        Nenhum ataque configurado. Clique no + ou arraste uma Arma.
+                        Nenhum ataque configurado.
                     </div>
                 </li>
                 {{/each}}
             </ol>
+        </div>
+
+        {{!-- ABA DE HABILIDADES --}}
+        <div class="tab abilities {{#ifEquals activeTab 'abilities'}}active{{/ifEquals}}" data-group="primary" data-tab="abilities">
+            <ol class="items-list">
+                <li class="item flexrow items-header">
+                    <div class="item-name">Habilidade</div>
+                    <div class="item-formula" style="flex: 0 0 80px; text-align: center;">Custo</div>
+                    <div class="item-formula" style="flex: 0 0 100px; text-align: center;">Execução</div>
+                    <div class="item-controls">
+                        {{#if editable}}
+                            <a class="item-control item-create" data-action="createDoc" title="Adicionar Habilidade" 
+                               data-document-class="Item" data-type="ability">
+                                <i class="fas fa-plus"></i>
+                            </a>
+                        {{/if}}
+                    </div>
+                </li>
+                {{#each abilities as |item|}}
+                <li class="item flexrow draggable" data-document-class="Item" data-item-id="{{item._id}}" style="flex-wrap: wrap;">
+                    <div class="item-name flexrow">
+                        <div class="item-image">
+                            <img src="{{item.img}}" width="24" height="24"/>
+                        </div>
+                        <h4 class="rollable pointer" data-action="toggleDescription" style="flex: 1;">{{item.name}}</h4>
+                    </div>
+                    
+                    {{!-- CUSTO FORMATADO --}}
+                    <div class="item-formula item-prop" style="flex: 0 0 80px; text-align: center; font-size: 11px;">
+                        {{item.displayCost}}
+                    </div>
+
+                    {{!-- EXECUÇÃO FORMATADA --}}
+                    <div class="item-formula item-prop" style="flex: 0 0 100px; text-align: center; font-size: 11px;">
+                        {{item.activationLabel}}
+                    </div>
+
+                    <div class="item-controls">
+                        <a class="item-control item-edit" data-action="viewDoc" title="Editar"><i class="fas fa-edit"></i></a>
+                        <a class="item-control" data-action="deleteDoc" title="Excluir"><i class="fas fa-trash"></i></a>
+                    </div>
+                </li>
+                {{else}}
+                <li class="item flexrow">
+                    <div class="item-name" style="padding: 10px; color: #777;">
+                        Nenhuma habilidade adicionada.
+                    </div>
+                </li>
+                {{/each}}
+            </ol>
+
+            <div class="section-group" style="margin-top: 10px;">
+                <span class="actor-title-header">Habilidades Diversas</span>
+                {{#if editable}} 
+                    <prose-mirror name="system.temporary.abilities" data-document-u-u-i-d="{{actor.uuid}}" value="{{system.temporary.abilities}}" collaborate="true" toggled="true">
+                        {{{enrichedAbilities}}}
+                    </prose-mirror>
+                {{else}}
+                    {{{enrichedAbilities}}}
+                {{/if}}
+            </div>
+        </div>
+
+        {{!-- ABA DE EFEITOS --}}
+        <div class="tab effects {{#ifEquals activeTab 'effects'}}active{{/ifEquals}}" data-group="primary" data-tab="effects">
+            <div class="content scrollable">
+                <ol class='effects-list'>
+                    {{#each effects as |section sid|}}
+                        <li class='effects-header flexrow' data-effect-type='{{section.type}}' data-drag="true">
+                            <div class='effect-name flexrow'>{{localize section.label}}</div>
+                            <div class='effect-source'>{{localize 'op.sourceEffect'}}</div>
+                            <div class='effect-source'>{{localize 'EFFECT.TabDuration'}}</div>
+                            <div class='effect-controls flexrow'>
+                                <a class='effect-control' data-action='createDoc' data-document-class='ActiveEffect'
+                                    data-origin="{{@root.actor.uuid}}" data-img="icons/svg/aura.svg"
+                                    {{#if (eq section.type "inactive")}} data-disabled="true"
+                                    {{else if (eq section.type "temporary")}} data-duration.rounds="1" {{/if}}
+                                    title='{{localize "op.effectCreate"}}'>
+                                    <i class='fas fa-plus'></i>
+                                </a>
+                            </div>
+                        </li>
+
+                        <ol class='effect-list'>
+                            {{#each section.effects as |effect|}}
+                                <li class='effect effect flexrow' data-effect-id='{{effect.id}}'
+                                    data-parent-id='{{effect.parent.id}}' data-document-class='ActiveEffect' data-drag="true">
+                                    <div class='effect-name flexrow'>
+                                        <img class='effect-image' src='{{effect.img}}' height="24" width="24"/>
+                                        <div>{{effect.name}}</div>
+                                    </div>
+                                    <div class='effect-source'>{{effect.sourceName}}</div>
+                                    <div class='effect-duration'>{{effect.duration.label}}</div>
+                                    <div class='effect-controls flexrow'>
+                                        {{#if @root.editable}}
+                                        <a class='effect-control' data-action='toggleEffect' title='{{localize "BOILERPLATE.Effect.Toggle"}}'>
+                                            <i class='fas {{#if effect.disabled}}fa-check{{else}}fa-times{{/if}}'></i>
+                                        </a>
+                                        {{/if}}
+                                        <a class='effect-control' data-action='viewDoc' title='{{localize "DOCUMENT.Update" type='Effect'}}'>
+                                            <i class='fas fa-edit'></i>
+                                        </a>
+                                        {{#if @root.editable}}
+                                        <a class='effect-control' data-action='deleteDoc' title='{{localize "DOCUMENT.Delete" type='Effect'}}'>
+                                            <i class='fas fa-trash'></i>
+                                        </a>
+                                        {{/if}}
+                                    </div>
+                                </li>
+                            {{/each}}
+                        </ol>
+                    {{/each}}
+                </ol>
+            </div>
         </div>
     </div>
 </section>

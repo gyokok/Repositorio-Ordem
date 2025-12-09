@@ -300,6 +300,7 @@ export class OrdemActorSheet extends api.HandlebarsApplicationMixin(sheets.Actor
 				2: [],
 				3: [],
 				4: [],
+				5: [],
 			},
 			invalid: [],
 		};
@@ -351,12 +352,20 @@ export class OrdemActorSheet extends api.HandlebarsApplicationMixin(sheets.Actor
 			// Append to abilities.
 			else if (i.type === 'ability') {
 				const type = i.system.abilityType;
+				const costVal = i.system.cost || "";
+                const costType = i.system.costType || "PE";
+				i.displayCost = (costVal !== "") ? `${costVal} ${costType}` : "—";
+				
+				if (i.system.activation) {
+                    i.activationLabel = game.i18n.localize(`op.executionChoices.${i.system.activation}`);
+                } else {
+                    i.activationLabel = "—";
+				}
 				
 				if (type === 'origin') abilities.valid[1].push(i);
 				else if (type === 'class') abilities.valid[2].push(i);
 				else if (type === 'path') abilities.valid[3].push(i);
 				else if (type === 'paranormal') abilities.valid[4].push(i);
-				
 				// Agrupa 'ability' e 'complication' na categoria 5
 				else if (type === 'ability' || type === 'complication') abilities.valid[5].push(i);
 				
