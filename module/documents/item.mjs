@@ -194,44 +194,37 @@ export class OrdemItem extends Item {
 	 * Place an attack roll using an item (weapon, feat, spell, or equipment)
 	 * Rely upon the d20Roll logic for the core implementation
 	 */
+	/**
+	 * Place an attack roll using an item (weapon, feat, spell, or equipment)
+	 * Rely upon the d20Roll logic for the core implementation
+	 */
 	async rollAttack(options = {}) {
+		// Verificação inicial
 		if (!this.system.formulas.attack.attr || !this.system.formulas.attack.skill)
 			throw new Error('This Item does not have a formula to roll!');
 
-		// 2. Recuperar valores do Ator
-		const attributes = this.actor.system.attributes;
-		const skills = this.actor.system.skills;
+		// --- CORREÇÃO: Definir a variável 'attack' e limpar código quebrado ---
+		const attack = this.system.formulas.attack;
+		const skill = this.actor.system.skills[attack.skill]; // Recupera a perícia corretamente
 
-		const attrValue = attributes[attrKey]?.value || 0;
-		const skillObj = skills[skillKey];
-		const skillBonus = (skillObj?.degree?.value ?? skillObj?.value) || 0;
-        
-        // --- CORREÇÃO: Incluir Modificador de Efeito ---
-        const skillMod = skillObj?.mod || 0;
-
-		// 3. Montar Fórmula
-		const { threshold } = this._parseCritical();
-		let diceFormula = attrValue > 0 ? `${attrValue}d20kh1` : "2d20kl1";
-		diceFormula += `cs>=${threshold}`;
-
-		// 4. Fórmula Final (Adicionado skillMod)
-		const formula = `${diceFormula} + ${skillBonus} + ${skillMod} + ${itemBonus}`;
-		
-		const skillLabel = game.i18n.localize(`op.skill.${skillKey}`) || skillKey;
-		await this._performRoll(formula, `Ataque: ${this.name} <span style="font-size:0.8em; color:gray">(${skillLabel})</span>`);
-		let attribute = this.parent.system.attributes[attack.attr];
+		// Lógica de Atributos (0 vira 2d20kl1)
+		let attribute = this.actor.system.attributes[attack.attr];
 		let rollMode = 'kh';
 
 		if (attribute.value == 0) {
 			attribute = 2;
 			rollMode = 'kl';
-		} else attribute = attribute.value;
+		} else {
+			attribute = attribute.value;
+		}
 
+		// Construção das partes da rolagem usando a configuração do sistema
+		// Adicionado verificações de nulo (?.) para evitar erros se a perícia não existir
 		const { parts, data } = CONFIG.Dice.BasicRoll.constructParts({
-			degree: skill.degree.value || null,
-			bonus: skill.value || null,
-			modifier: skill.mod || null,
-			attackBonus: attack.bonus || null
+			degree: skill?.degree?.value || 0,
+			bonus: skill?.value || 0,
+			modifier: skill?.mod || 0,
+			attackBonus: attack.bonus || 0
 		});
 
 		const rollConfig = {
@@ -241,25 +234,11 @@ export class OrdemItem extends Item {
 			chatMessage: true,
 		};
 
-		// fromConfig
+		// Combina a fórmula do dado com os bônus
 		rollConfig.formula = [rollConfig.formula].concat(parts ?? []).join(' + ');
 		rollConfig.data = { ...(rollConfig.data ?? {}), ...data};
 
-		// if ( spellLevel ) rollConfig.data.item.level = spellLevel;
-		/**
-		 * A hook event that fires before a formula is rolled for an Item.
-		 * @function ordemparanormal.preRollFormula
-		 * @memberof hookEvents
-		 * @param {OrdemItem} item              Item for which the roll is being performed.
-		 * @param {object} config               Configuration data for the pending roll.
-		 * @param {string} config.formula       Formula that will be rolled.
-		 * @param {object} config.data          Data used when evaluating the roll.
-		 * @param {boolean} config.chatMessage  Should a chat message be created for this roll?
-		 * @returns {boolean}                   Explicitly return false to prevent the roll from being performed.
-		 */
-
-		// if ( Hooks.call('ordemparanormal.preRollFormula', this, rollConfig) === false ) return;
-
+		// Realiza a rolagem
 		const roll = await new Roll(rollConfig.formula, rollConfig.data).roll({
 			async: true,
 		});
@@ -270,6 +249,7 @@ export class OrdemItem extends Item {
 			roll,
 		});
 
+		// Envia para o chat
 		if (rollConfig.chatMessage) {
 			roll.toMessage({
 				speaker: ChatMessage.getSpeaker({ actor: this.actor }),
@@ -288,16 +268,11 @@ export class OrdemItem extends Item {
 
 		/**
 		 * A hook event that fires after a formula has been rolled for an Item.
-		 * @function ordemparanormal.rollFormula
-		 * @memberof hookEvents
-		 * @param {OrdemItem} item  Item for which the roll was performed.
-		 * @param {Roll} roll       The resulting roll.
 		 */
 		Hooks.callAll('ordemparanormal.rollFormula', this, roll);
 
 		return { roll, criticalStatus };
 	}
-
 	/**
 	 *
 	 */

@@ -186,8 +186,10 @@
                 <li class="item flexrow draggable" data-document-class="Item" data-item-id="{{item._id}}" style="flex-wrap: wrap;">
                     <div class="item-name flexrow">
                         <div class="item-image">
-                            <img src="{{item.img}}" width="24" height="24"/>
-                        </div>
+							<a class="rollable" data-action="onRoll">
+								<img src="{{item.img}}" title="{{item.name}}" width="24" height="24"/>
+							</a>
+						</div>
                         <h4 class="rollable pointer" data-action="toggleDescription" style="flex: 1;">{{item.name}}</h4>
                     </div>
                     

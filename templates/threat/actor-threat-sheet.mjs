@@ -307,7 +307,20 @@ export class OrdemThreatSheet extends api.HandlebarsApplicationMixin(sheets.Acto
 
 	static async _onRoll(event, target) {
 		event.preventDefault();
-		const doc = this._getEmbeddedDocument(target);
+		
+		// 1. Tenta recuperar usando a lógica original da Ficha de Ameaça (estrita)
+		let doc = this._getEmbeddedDocument(target);
+
+		// 2. Se falhar, usa a lógica da Ficha de Jogador (mais flexível)
+		// Busca pelo container com a classe .item que tenha um data-item-id
+		if (!doc) {
+			const itemRow = target.closest('.item');
+			if (itemRow && itemRow.dataset.itemId) {
+				doc = this.actor.items.get(itemRow.dataset.itemId);
+			}
+		}
+
+		// Se encontrou o item, realiza a rolagem
 		if (doc) return doc.roll();
 	}
 
