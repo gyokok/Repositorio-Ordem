@@ -117,6 +117,7 @@ op.dropdownTrilha = {
 		{name: 'negociador', label: 'op.trilhas.negociador'},
 		{name: 'perseverante', label: 'op.trilhas.perseverante'},
 		{name: 'tecnico', label: 'op.trilhas.tecnico'},
+		{name: 'detetiveEspiritual', label: 'op.trilhas.detetiveEspiritual'},
 	],
 	occultist: [
 		{name: 'conduite', label: 'op.trilhas.conduite'},
