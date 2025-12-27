@@ -274,6 +274,7 @@
 
 	"op.executionChoices": {
 		"free": "Livre",
+		"movement": "Movimento",
 		"default": "Padrão",
 		"complete": "Completa",
 		"reaction": "Reação"

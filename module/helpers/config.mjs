@@ -287,6 +287,7 @@ op.ritualDegree = { 5: 'Outro', 1: '1', 2: '2', 3: '3', 4: '4' };
  */
 op.dropdownExecution = {
 	free: 'op.executionChoices.free',
+	movement: 'op.executionChoices.movement',
 	default: 'op.executionChoices.default',
 	complete: 'op.executionChoices.complete',
 	reaction: 'op.executionChoices.reaction',
