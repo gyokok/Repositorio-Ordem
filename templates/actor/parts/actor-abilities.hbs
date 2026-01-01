@@ -1,4 +1,47 @@
 <section class="tab flexcol {{tab.cssClass}}" data-tab="abilities" data-group="primary">
+{{!-- Gerenciador de Recursos (Responsivo - Não vaza da ficha) --}}
+<div class="ritual-dt" style="margin-bottom: 2px; padding: 4px; display: flex; justify-content: space-between; gap: 4px; align-items: flex-end;">
+    
+    {{!-- Recurso 01 --}}
+    <div class="resource-item" style="display: flex; flex-direction: column; align-items: center; gap: 0; flex: 1;">
+        {{!-- Nome (100% do espaço disponível da coluna) --}}
+        <input type="text" name="system.resources.res1.label" value="{{system.resources.res1.label}}" placeholder="Recurso 1" style="border: none; background: transparent; text-align: center; font-weight: bold; font-family: 'Optima Nova LT PRO', 'Roboto', sans-serif; width: 100%; min-width: 0; color: inherit; margin: 0; padding: 0; height: auto;"/>
+        
+        {{!-- Valores --}}
+        <div style="display: flex; align-items: center; gap: 2px; justify-content: center;">
+            <input type="number" name="system.resources.res1.value" value="{{system.resources.res1.value}}" placeholder="0" style="width: 30px; text-align: center; border: none; border-bottom: 1px solid #888; background: transparent; height: 25px; color: inherit; padding: 0;"/>
+            <span style="font-weight: bold;">/</span>
+            <input type="number" name="system.resources.res1.max" value="{{system.resources.res1.max}}" placeholder="0" style="width: 30px; text-align: center; border: none; border-bottom: 1px solid #888; background: transparent; height: 25px; color: inherit; padding: 0;"/>
+        </div>
+    </div>
+
+    {{!-- Recurso 02 --}}
+    <div class="resource-item" style="display: flex; flex-direction: column; align-items: center; gap: 0; flex: 1;">
+        {{!-- Nome --}}
+        <input type="text" name="system.resources.res2.label" value="{{system.resources.res2.label}}" placeholder="Recurso 2" style="border: none; background: transparent; text-align: center; font-weight: bold; font-family: 'Optima Nova LT PRO', 'Roboto', sans-serif; width: 100%; min-width: 0; color: inherit; margin: 0; padding: 0; height: auto;"/>
+        
+        {{!-- Valores --}}
+        <div style="display: flex; align-items: center; gap: 2px; justify-content: center;">
+            <input type="number" name="system.resources.res2.value" value="{{system.resources.res2.value}}" placeholder="0" style="width: 30px; text-align: center; border: none; border-bottom: 1px solid #888; background: transparent; height: 25px; color: inherit; padding: 0;"/>
+            <span style="font-weight: bold;">/</span>
+            <input type="number" name="system.resources.res2.max" value="{{system.resources.res2.max}}" placeholder="0" style="width: 30px; text-align: center; border: none; border-bottom: 1px solid #888; background: transparent; height: 25px; color: inherit; padding: 0;"/>
+        </div>
+    </div>
+
+    {{!-- Recurso 03 --}}
+    <div class="resource-item" style="display: flex; flex-direction: column; align-items: center; gap: 0; flex: 1;">
+        {{!-- Nome --}}
+        <input type="text" name="system.resources.res3.label" value="{{system.resources.res3.label}}" placeholder="Recurso 3" style="border: none; background: transparent; text-align: center; font-weight: bold; font-family: 'Optima Nova LT PRO', 'Roboto', sans-serif; width: 100%; min-width: 0; color: inherit; margin: 0; padding: 0; height: auto;"/>
+        
+        {{!-- Valores --}}
+        <div style="display: flex; align-items: center; gap: 2px; justify-content: center;">
+            <input type="number" name="system.resources.res3.value" value="{{system.resources.res3.value}}" placeholder="0" style="width: 30px; text-align: center; border: none; border-bottom: 1px solid #888; background: transparent; height: 25px; color: inherit; padding: 0;"/>
+            <span style="font-weight: bold;">/</span>
+            <input type="number" name="system.resources.res3.max" value="{{system.resources.res3.max}}" placeholder="0" style="width: 30px; text-align: center; border: none; border-bottom: 1px solid #888; background: transparent; height: 25px; color: inherit; padding: 0;"/>
+        </div>
+    </div>
+<div style="border-bottom: 2px solid #000; margin-bottom: 5px;"></div>
+    <hr class="divider"> </div>
 	<div class="abilities-details">
 		<ol class="items-list main-items">
 			{{#each abilities.valid as |abilities type|}}
