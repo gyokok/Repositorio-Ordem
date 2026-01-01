@@ -1,0 +1,37 @@
+{
+  "name": "Sinergia Sobrenatural",
+  "type": "ability",
+  "img": "systems/ordemparanormal/media/icons/abilities/class/occultist/Tatuagem%20Ritual%C3%ADstica.svg",
+  "system": {
+    "id": "bW3yA7dX1cE6fH9s",
+    "abilityType": "class",
+    "preRequisite": "Trilha: Possuído",
+    "description": "<p>Você permite que a entidade assuma controle parcial dos seus movimentos. Gastando <strong>2 PE</strong>, você recebe <strong>+1d20</strong> em testes de <strong>Acrobacia</strong>, <strong>Atletismo</strong> e <strong>Furtividade</strong> até o final da cena. Além disso, enquanto esta habilidade estiver ativa, durante cenas de furtividade, qualquer aumento na sua visibilidade é reduzido em 1 (mínimo de 0).</p>",
+    "cost": "2",
+    "costType": "PE",
+    "activation": "Livre"
+  },
+  "effects": [],
+  "folder": null,
+  "flags": {},
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": {
+      "worldId": "op",
+      "uuid": "",
+      "coreVersion": "13.351",
+      "systemId": "ordemparanormal",
+      "systemVersion": "7.2.4"
+    },
+    "coreVersion": "13.351",
+    "systemId": "ordemparanormal",
+    "systemVersion": "7.2.4",
+    "createdTime": 1763270950485,
+    "modifiedTime": 1766878097293,
+    "lastModifiedBy": "WvQ1dFpyvTLW8sGD"
+  },
+  "ownership": {
+    "default": 0
+  }
+}
