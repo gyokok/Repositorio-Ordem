@@ -43,7 +43,8 @@ export class OrdemActorSheet extends api.HandlebarsApplicationMixin(sheets.Actor
 			toggleEffect: this._toggleEffect,
 			onRoll: this.#onRoll,
 			onRollSkillCheck: this.#onRollSkillCheck,
-			onRollAttributeTest: this.#onRollAttributeTest
+			onRollAttributeTest: this.#onRollAttributeTest,
+			toggleResources: this._onToggleResources
 		},
 		 dragDrop: [{ dragSelector: '[data-drag]', dropSelector: null }],
 	};
@@ -98,6 +99,8 @@ export class OrdemActorSheet extends api.HandlebarsApplicationMixin(sheets.Actor
 	/** @override */
 	async _prepareContext(options) {
 		const context = await super._prepareContext(options);
+		
+		context.mostrarRecursos = this.actor.getFlag("ordemparanormal", "showResources") || false;
 
 		foundry.utils.mergeObject(context, {
 			editable: this.isEditable,
@@ -1021,6 +1024,14 @@ export class OrdemActorSheet extends api.HandlebarsApplicationMixin(sheets.Actor
 	async _onSubmit(...args) {
 		await super._onSubmit(...args);
 	}
+	
+	static async _onToggleResources(event, target) {
+        event.preventDefault();
+        // Pega o estado atual (ou false se não existir)
+        const currentState = this.actor.getFlag("ordemparanormal", "showResources") || false;
+        // Salva o inverso (!currentState)
+        await this.actor.setFlag("ordemparanormal", "showResources", !currentState);
+    }
 
 	/* -------------------------------------------- */
 }
