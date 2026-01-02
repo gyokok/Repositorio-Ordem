@@ -455,7 +455,7 @@
 				"str": { "value": 0 },
 				"vit": { "value": 0 },
 				"movement": {
-					"walk": 0,
+					"walk": "",
 					"unit": "m",
 					"squares": 0
 				},
@@ -490,9 +490,9 @@
 			"defense": {
 				"value": "",
 				"skillResistances": [],
-				"damageResistances": []
+				"damageResistances": ""
 			},
-			"vulnerabilities": [],
+			"vulnerabilities": "",
 			"actions": [],
 			"details": {
 				"description": "",
