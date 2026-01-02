@@ -423,23 +423,23 @@
 					"value": 1,
 					"bonus": 0
 				}
-				"resources": {
-					"res1": {
-					  "value": 0,
-					  "max": 0,
-					  "label": ""
-					},
-					"res2": {
-					  "value": 0,
-					  "max": 0,
-					  "label": ""
-					},
-					"res3": {
-					  "value": 0,
-					  "max": 0,
-					  "label": ""
-					}
-				  }
+			},
+			"resources": {
+				"res1": {
+					"value": 0,
+					"max": 0,
+					"label": ""
+				},
+				"res2": {
+					"value": 0,
+					"max": 0,
+					"label": ""
+				},
+				"res3": {
+					"value": 0,
+					"max": 0,
+					"label": ""
+				}
 			}
 		},
 		"threat": {

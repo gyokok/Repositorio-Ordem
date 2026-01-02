@@ -15,6 +15,7 @@ export class OrdemActorSheet extends api.HandlebarsApplicationMixin(sheets.Actor
 	constructor(options = {}) {
 		super(options);
 		this.#dragDrop = this.#createDragDropHandlers();
+		this.expanded = new Set();
 	}
 
 	/** @inheritDoc */
@@ -326,6 +327,8 @@ export class OrdemActorSheet extends api.HandlebarsApplicationMixin(sheets.Actor
 
 			// Creating the data to use an item
 			i.system.using = !i.system.using ? [true, 'fas'] : i.system.using;
+			
+			i.isExpanded = this.expanded.has(i.id);
 
 			// Append to protections.
 			if (i.type === 'protection') {
@@ -410,6 +413,20 @@ export class OrdemActorSheet extends api.HandlebarsApplicationMixin(sheets.Actor
 		for (const button of this.element.querySelectorAll('.adjustment-button')) {
 			button.addEventListener('click', this._onAdjustInput.bind(this));
 		}
+		
+		const html = $(this.element);
+		
+        html.find('.item-toggle').click(event => {
+            event.preventDefault();
+            event.stopPropagation(); // Garante que o clique não ative outras coisas
+            
+            // Encontra o item pai (li) e depois a descrição dentro dele
+            const li = $(event.currentTarget).parents(".item");
+            const desc = li.find(".item-description");
+            
+            // Faz a animação de abrir/fechar
+            desc.slideToggle(200);
+        });
 		// You may want to add other special handling here
 		// Foundry comes with a large number of utility classes, e.g. SearchFilter
 		// That you may want to implement yourself.
@@ -1032,6 +1049,19 @@ export class OrdemActorSheet extends api.HandlebarsApplicationMixin(sheets.Actor
         // Salva o inverso (!currentState)
         await this.actor.setFlag("ordemparanormal", "showResources", !currentState);
     }
+	
+	static _onToggleDescription(event) {
+    event.preventDefault();
+    const li = event.currentTarget.closest(".item");
+    const itemId = li.dataset.itemId;
+
+    if (this.expanded.has(itemId)) {
+        this.expanded.delete(itemId);
+    } else {
+        this.expanded.add(itemId);
+    }
+    this.render();
+}
 
 	/* -------------------------------------------- */
 }
