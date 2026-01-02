@@ -102,6 +102,10 @@ export class OrdemActorSheet extends api.HandlebarsApplicationMixin(sheets.Actor
 		const context = await super._prepareContext(options);
 		
 		context.mostrarRecursos = this.actor.getFlag("ordemparanormal", "showResources") || false;
+		
+		const usarPD = false;
+		context.custoLabel = this.usingWithoutSanityRule ? "PD" : "PE";
+		
 
 		foundry.utils.mergeObject(context, {
 			editable: this.isEditable,

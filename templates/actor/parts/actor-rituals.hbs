@@ -14,11 +14,14 @@
                 <div class="item-name"></div>
             {{else}}
                 <div class="item-name">
+                    {{!-- Nome do Círculo --}}
                     {{circle}}º {{localize "op.circle"}} - 
-                    {{#ifEquals circle 1}}1 PE{{/ifEquals}}
-                    {{#ifEquals circle 2}}3 PE{{/ifEquals}}
-                    {{#ifEquals circle 3}}6 PE{{/ifEquals}}
-                    {{#ifEquals circle 4}}10 PE{{/ifEquals}}
+                    
+                    {{!-- Lógica de Custo Dinâmico (PE ou PD) --}}
+                    {{#ifEquals circle 1}}1 {{@root.custoLabel}}{{/ifEquals}}
+                    {{#ifEquals circle 2}}3 {{@root.custoLabel}}{{/ifEquals}}
+                    {{#ifEquals circle 3}}6 {{@root.custoLabel}}{{/ifEquals}}
+                    {{#ifEquals circle 4}}10 {{@root.custoLabel}}{{/ifEquals}}
                 </div>
             {{/ifEquals}}
             
@@ -43,26 +46,17 @@
 
         {{!-- Loop dos Rituais --}}
         {{#each rituals as |item id|}}
-        
-        {{!-- Item Container: 'flexcol' permite que a descrição fique embaixo --}}
-        <li class="item flexcol draggable" data-document-class="Item" data-item-id="{{item._id}}">
+        <li class="item draggable" data-document-class="Item" data-item-id="{{item._id}}" style="display: flex; flex-direction: column; height: auto;">
             
-            {{!-- Linha de Informações (Sempre visível) --}}
-            <div class="flexrow" style="width: 100%; align-items: center;">
-                
+            {{!-- Linha Principal --}}
+            <div class="flexrow item-row" style="width: 100%; align-items: center;">
                 <div class="item-name flexrow">
                     <div class="item-image slide">
-                        {{!-- A classe 'item-toggle' ativa o script de abrir a descrição --}}
-                        {{!-- O 'rollable' continua funcionando independente --}}
-                        <div class="item-toggle" style="cursor: pointer; display: inline-block;">
-                             <img src="{{item.img}}" title="{{item.name}}" width="24" height="24" />
-                        </div>
-                        <a class="rollable" data-roll-type="item" data-action="onRoll" style="margin-left: 5px;">
+                        <img src="{{item.img}}" title="{{item.name}}" width="24" height="24" class="item-toggle" style="cursor: pointer;"/>
+                        <a class="rollable" data-roll-type="item" data-action="onRoll">
                             <i class="fa-solid fa-dice-d20"></i>
                         </a>
                     </div>
-                    
-                    {{!-- Clique no nome também abre a descrição --}}
                     <h4 class="item-toggle" style="cursor: pointer;">{{item.name}}</h4>
                 </div>
                 
@@ -100,7 +94,7 @@
                 </div>
             </div>
 
-            {{!-- Descrição (Escondida por padrão via display: none) --}}
+            {{!-- Descrição Oculta --}}
             <div class="item-description" style="display: none; width: 100%; padding: 5px 10px; border-top: 1px dashed #777; margin-top: 5px; font-size: 0.9em; text-align: left;">
                 {{{item.system.description}}}
             </div>
