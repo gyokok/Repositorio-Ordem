@@ -5,22 +5,36 @@
         .sheet-body .tab.active { display: block; }
         .sheet-tabs .item.active { text-decoration: underline; font-weight: bold; text-shadow: 0 0 5px var(--color-shadow-primary); }
         
-        /* Estilo para a área do Enigma */
+        /* Estilo para a área do Enigma - CORRIGIDO PARA AUTO-EXPANSÃO */
         .enigma-container {
-            padding: 10px;
+            padding: 15px;
             background: rgba(0, 0, 0, 0.03);
             border: 1px solid #999;
             border-radius: 5px;
-            height: 100%;
+            
+            /* Alteração importante: permite crescer com o texto */
+            height: auto; 
+            min-height: 100%;
+            
             display: flex;
             flex-direction: column;
         }
+
+        /* Força o editor do Foundry a crescer junto */
+        .enigma-container .editor, 
+        .enigma-container .prosemirror,
+        .enigma-container .editor-content {
+            height: auto !important;
+            min-height: 300px; /* Altura mínima inicial confortável */
+            flex: 1;
+        }
+
         .enigma-header {
             font-family: 'Special Elite', 'Courier New', serif;
             font-size: 1.5em;
             text-align: center;
             border-bottom: 2px solid #000;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             padding-bottom: 5px;
         }
         
@@ -58,27 +72,27 @@
                 {{!-- LINHA: VD + PRESENÇA PERTURBADORA --}}
                 <div class="flexrow" style="gap: 5px; margin-top: 5px; align-items: stretch;">
                     
-                    {{!-- VD (Centralizado Manualmente) --}}
-                    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.05); border-radius: 5px; border: 1px solid #ccc; padding: 2px 5px; flex: 0 0 60px;">
-                        <label style="font-weight: bold; font-size: 11px; color: #333; margin-bottom: 2px; text-align: center; line-height: 1;">VD</label>
+                    {{!-- VD (Centralizado) --}}
+                    <div style="background: rgba(0, 0, 0, 0.05); border-radius: 5px; border: 1px solid #ccc; padding: 2px 5px; flex: 0 0 60px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                        <label style="font-weight: bold; font-size: 11px; color: #333; margin-bottom: 2px; text-align: center; width: 100%;">VD</label>
                         <input type="number" name="system.attributes.vd.value" value="{{system.attributes.vd.value}}" data-dtype="Number"
-                               style="width: 100%; text-align: center; font-size: 16px; font-weight: bold; border: none; background: transparent; height: 20px; padding: 0; margin: 0;"/>
+                               style="width: 100%; text-align: center; font-size: 16px; font-weight: bold; border: none; background: transparent; height: 20px; padding: 0;"/>
                     </div>
 
                     {{!-- PRESENÇA PERTURBADORA --}}
-                    <div class="disturbing-presence flexrow" style="display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.05); border-radius: 5px; border: 1px solid #ccc; padding: 0 10px; gap: 15px; flex: 1;">
+                    <div class="disturbing-presence flexrow flex-center" style="background: rgba(0, 0, 0, 0.05); border-radius: 5px; border: 1px solid #ccc; padding: 0 10px; gap: 15px; flex: 1;">
                         <label style="font-weight: bold; font-size: 12px; white-space: nowrap; color: #333;">Presença Perturbadora:</label>
                         
                         <div class="flexrow flex-center" style="gap: 5px; flex: 0 0 auto;">
-                            <label style="font-size: 11px; color: #555; font-weight: bold;">DT</label>
+                            <label style="font-size: 11px; color: #555;">DT</label>
                             <input type="number" name="system.disturbingPresence.dt" value="{{system.disturbingPresence.dt}}" 
-                                   style="height: 20px; font-size: 12px; width: 40px; text-align: center; font-weight: bold;" placeholder="0">
+                                   style="height: 20px; font-size: 12px; width: 40px; text-align: center;" placeholder="0">
                         </div>
                         
                         <div class="flexrow flex-center" style="gap: 5px; flex: 0 0 auto;">
-                            <label style="font-size: 11px; color: #555; font-weight: bold;">Dano</label>
+                            <label style="font-size: 11px; color: #555;">Dano</label>
                             <input type="text" name="system.disturbingPresence.mentalDamage" value="{{system.disturbingPresence.mentalDamage}}" 
-                                   style="height: 20px; font-size: 12px; width: 80px; text-align: center; font-weight: bold;" placeholder="Ex: 2d6">
+                                   style="height: 20px; font-size: 12px; width: 80px; text-align: center;" placeholder="Ex: 2d6">
                             <i class="fas fa-brain rollable pointer" data-action="onRollMentalDamage" title="Rolar Dano Mental" 
                                style="color: #6a0dad; font-size: 14px; margin-left: 2px;"></i>
                         </div>
@@ -88,7 +102,6 @@
             </div>
         </div>
 
-        {{!-- CAMPOS INFERIORES --}}
         <div class="header-fields" style="margin-top: 2px;">
             
             {{!-- 1ª LINHA: VIDA (PV) --}}
@@ -336,7 +349,9 @@
         <div class="tab enigma {{#ifEquals activeTab 'enigma'}}active{{/ifEquals}}" data-group="primary" data-tab="enigma">
             <div class="enigma-container">
                 <h2 class="enigma-header">ENIGMA DE MEDO</h2>
-                <div style="flex: 1; min-height: 200px;">
+                
+                {{!-- CORREÇÃO: Div com height:auto para permitir expansão --}}
+                <div style="flex: 1; height: auto; min-height: 200px;">
                     {{#if editable}} 
                         <prose-mirror name="system.details.fearRiddle" data-document-u-u-i-d="{{actor.uuid}}" value="{{system.details.fearRiddle}}" collaborate="true" toggled="true">
                             {{{enrichedFearRiddle}}}
