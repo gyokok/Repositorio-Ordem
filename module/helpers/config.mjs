@@ -262,12 +262,13 @@ op.dropdownDamageType = {
  * @type {Object}
  */
 op.dropdownPowerType = {
-	class: 'op.powerTypeChoices.class',
-	paranormal: 'op.powerTypeChoices.paranormal',
-	path: 'op.powerTypeChoices.path',
-	origin: 'op.powerTypeChoices.origin',
-	complication: 'op.powerTypeChoices.complication',
-	ability: 'op.powerTypeChoices.ability',
+	origin: 'op.powerTypeChoices.origin',             // 1. Poder de Origem
+    class: 'op.powerTypeChoices.class',               // 2. Poder de Classe
+    path: 'op.powerTypeChoices.path',                 // 3. Trilha
+    general: 'op.powerTypeChoices.general',           // 4. Geral
+    paranormal: 'op.powerTypeChoices.paranormal',     // 5. Paranormal
+    complication: 'op.powerTypeChoices.complication', // 6. Complicação
+    ability: 'op.powerTypeChoices.ability',       	  // 7. Outra Habilidade
 };
 
 /**

@@ -54,12 +54,14 @@
             {{!-- Cabeçalho da Seção (Origem, Classe, etc) --}}
             <li class="item flexrow items-header">
                 <div class="item-name">
-                    {{#ifEquals type 1}} {{localize "op.powerTypeChoices.origin"}}      {{/ifEquals}}
-                    {{#ifEquals type 2}} {{localize "op.abilitiesAbv.class"}}       {{/ifEquals}}
-                    {{#ifEquals type 3}} {{localize "op.abilitiesAbv.path"}}    {{/ifEquals}}
-                    {{#ifEquals type 4}} {{localize "op.abilitiesAbv.paranormal"}}      {{/ifEquals}}
-                    {{#ifEquals type 5}} {{localize "op.abilitiesAbv.ability"}}      {{/ifEquals}}
-                </div>
+                    {{#ifEquals type 1}} {{localize "op.abilitiesAbv.origin"}}      {{/ifEquals}}
+                    {{#ifEquals type 2}} {{localize "op.abilitiesAbv.class"}}             {{/ifEquals}}
+                    {{#ifEquals type 3}} {{localize "op.abilitiesAbv.path"}}            {{/ifEquals}}
+                    {{#ifEquals type 4}} {{localize "op.abilitiesAbv.general"}}        {{/ifEquals}}
+                    {{#ifEquals type 5}} {{localize "op.abilitiesAbv.paranormal"}}      {{/ifEquals}}
+					{{#ifEquals type 6}} {{localize "op.abilitiesAbv.complication"}}      {{/ifEquals}}
+                    {{#ifEquals type 7}} {{localize "op.abilitiesAbv.ability"}}          {{/ifEquals}}
+				</div>
                 
                 {{!-- Colunas com Tamanho Fixo (Style do seu código) --}}
                 <div class="item-formula" style="flex: 0 0 120px;">{{localize "op.type"}}</div>
