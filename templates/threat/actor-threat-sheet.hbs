@@ -5,36 +5,22 @@
         .sheet-body .tab.active { display: block; }
         .sheet-tabs .item.active { text-decoration: underline; font-weight: bold; text-shadow: 0 0 5px var(--color-shadow-primary); }
         
-        /* Estilo para a área do Enigma - CORRIGIDO PARA AUTO-EXPANSÃO */
+        /* Estilo para a área do Enigma */
         .enigma-container {
-            padding: 15px;
+            padding: 10px;
             background: rgba(0, 0, 0, 0.03);
             border: 1px solid #999;
             border-radius: 5px;
-            
-            /* Alteração importante: permite crescer com o texto */
-            height: auto; 
-            min-height: 100%;
-            
+            height: 100%;
             display: flex;
             flex-direction: column;
         }
-
-        /* Força o editor do Foundry a crescer junto */
-        .enigma-container .editor, 
-        .enigma-container .prosemirror,
-        .enigma-container .editor-content {
-            height: auto !important;
-            min-height: 300px; /* Altura mínima inicial confortável */
-            flex: 1;
-        }
-
         .enigma-header {
             font-family: 'Special Elite', 'Courier New', serif;
             font-size: 1.5em;
             text-align: center;
             border-bottom: 2px solid #000;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             padding-bottom: 5px;
         }
         
@@ -72,7 +58,7 @@
                 {{!-- LINHA: VD + PRESENÇA PERTURBADORA --}}
                 <div class="flexrow" style="gap: 5px; margin-top: 5px; align-items: stretch;">
                     
-                    {{!-- VD (Centralizado) --}}
+                    {{!-- VD --}}
                     <div style="background: rgba(0, 0, 0, 0.05); border-radius: 5px; border: 1px solid #ccc; padding: 2px 5px; flex: 0 0 60px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                         <label style="font-weight: bold; font-size: 11px; color: #333; margin-bottom: 2px; text-align: center; width: 100%;">VD</label>
                         <input type="number" name="system.attributes.vd.value" value="{{system.attributes.vd.value}}" data-dtype="Number"
@@ -151,13 +137,47 @@
 
             </div>
 
-            {{!-- ATRIBUTOS --}}
+            {{!-- ATRIBUTOS (REORDENADOS: AGI, FOR, INT, PRE, VIG) --}}
             <div class="resources flexrow">
-                <div class="resource flex-group-center"><label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="dex">{{localize 'op.attDex'}}</label><div class="resource-content flexrow flex-center flex-between"><input type="text" name="system.attributes.dex.value" value="{{system.attributes.dex.value}}" data-dtype="Number" /></div></div>
-                <div class="resource flex-group-center"><label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="int">{{localize 'op.attInt'}}</label><div class="resource-content flexrow flex-center flex-between"><input type="text" name="system.attributes.int.value" value="{{system.attributes.int.value}}" data-dtype="Number" /></div></div>
-                <div class="resource flex-group-center"><label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="vit">{{localize 'op.attVit'}}</label><div class="resource-content flexrow flex-center flex-between"><input type="text" name="system.attributes.vit.value" value="{{system.attributes.vit.value}}" data-dtype="Number" /></div></div>
-                <div class="resource flex-group-center"><label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="pre">{{localize 'op.attPre'}}</label><div class="resource-content flexrow flex-center flex-between"><input type="text" name="system.attributes.pre.value" value="{{system.attributes.pre.value}}" data-dtype="Number" /></div></div>
-                <div class="resource flex-group-center"><label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="str">{{localize 'op.attStr'}}</label><div class="resource-content flexrow flex-center flex-between"><input type="text" name="system.attributes.str.value" value="{{system.attributes.str.value}}" data-dtype="Number" /></div></div>
+                {{!-- 1. AGI (dex) --}}
+                <div class="resource flex-group-center">
+                    <label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="dex">{{localize 'op.attDex'}}</label>
+                    <div class="resource-content flexrow flex-center flex-between">
+                        <input type="text" name="system.attributes.dex.value" value="{{system.attributes.dex.value}}" data-dtype="Number" />
+                    </div>
+                </div>
+                
+                {{!-- 2. FOR (str) --}}
+                <div class="resource flex-group-center">
+                    <label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="str">{{localize 'op.attStr'}}</label>
+                    <div class="resource-content flexrow flex-center flex-between">
+                        <input type="text" name="system.attributes.str.value" value="{{system.attributes.str.value}}" data-dtype="Number" />
+                    </div>
+                </div>
+
+                {{!-- 3. INT (int) --}}
+                <div class="resource flex-group-center">
+                    <label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="int">{{localize 'op.attInt'}}</label>
+                    <div class="resource-content flexrow flex-center flex-between">
+                        <input type="text" name="system.attributes.int.value" value="{{system.attributes.int.value}}" data-dtype="Number" />
+                    </div>
+                </div>
+
+                {{!-- 4. PRE (pre) --}}
+                <div class="resource flex-group-center">
+                    <label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="pre">{{localize 'op.attPre'}}</label>
+                    <div class="resource-content flexrow flex-center flex-between">
+                        <input type="text" name="system.attributes.pre.value" value="{{system.attributes.pre.value}}" data-dtype="Number" />
+                    </div>
+                </div>
+
+                {{!-- 5. VIG (vit) --}}
+                <div class="resource flex-group-center">
+                    <label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="vit">{{localize 'op.attVit'}}</label>
+                    <div class="resource-content flexrow flex-center flex-between">
+                        <input type="text" name="system.attributes.vit.value" value="{{system.attributes.vit.value}}" data-dtype="Number" />
+                    </div>
+                </div>
             </div>
 
             {{!-- PERÍCIAS --}}
@@ -350,7 +370,7 @@
             <div class="enigma-container">
                 <h2 class="enigma-header">ENIGMA DE MEDO</h2>
                 
-                {{!-- CORREÇÃO: Div com height:auto para permitir expansão --}}
+                {{!-- Div com height:auto para permitir expansão --}}
                 <div style="flex: 1; height: auto; min-height: 200px;">
                     {{#if editable}} 
                         <prose-mirror name="system.details.fearRiddle" data-document-u-u-i-d="{{actor.uuid}}" value="{{system.details.fearRiddle}}" collaborate="true" toggled="true">
