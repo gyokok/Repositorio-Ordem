@@ -23,46 +23,75 @@
             margin-bottom: 10px;
             padding-bottom: 5px;
         }
+        
+        /* Imagem da Criatura */
+        .threat-profile-img {
+            flex: 0 0 110px;
+            height: 110px;
+            width: 110px;
+            object-fit: cover;
+            border: 1px solid #000;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 15px;
+        }
     </style>
 
     {{!-- HEADER (CABEÇALHO) --}}
     <header class="sheet-header-op">
-        <div class="header-identify align-center flex" style="flex-wrap: wrap;">
-            <img class="profile-img" src="{{actor.img}}" data-edit="img" data-action="onEditImage" title="{{actor.name}}" height="64" width="64" />
+        <div class="header-identify align-center flex" style="flex-wrap: nowrap; align-items: flex-start;">
             
-            <div class="flexcol" style="flex: 1;">
+            {{!-- COLUNA ESQUERDA: APENAS IMAGEM --}}
+            <img class="threat-profile-img" src="{{actor.img}}" data-edit="img" data-action="onEditImage" title="{{actor.name}}" />
+            
+            {{!-- COLUNA DIREITA --}}
+            <div class="flexcol" style="flex: 1; justify-content: flex-start; gap: 5px;">
+                
+                {{!-- NOME --}}
                 <div class="flexrow flex-center">
                     <h1 class="charname" style="margin: 0; flex: 1;">
-                        <input name="name" type="text" value="{{actor.name}}" placeholder="Nome da Ameaça" />
+                        <input name="name" type="text" value="{{actor.name}}" placeholder="Nome da Ameaça" 
+                               style="text-align: center; font-weight: bold; font-size: 24px;" />
                     </h1>
-                    <div class="resource flex-group-center progress" style="max-width: 60px; margin-left: 5px;">
-                        <label for="system.attributes.vd.value" class="resource-label"> VD </label>
-                        <div class="resource-content flexrow flex-center">
-                            <input type="number" name="system.attributes.vd.value" value="{{system.attributes.vd.value}}" data-dtype="Number"/>
-                        </div>
-                    </div>
                 </div>
 
-                {{!-- PRESENÇA PERTURBADORA --}}
-                <div class="disturbing-presence flexrow flex-center" style="background: rgba(0, 0, 0, 0.05); border-radius: 5px; padding: 2px 5px; margin-top: 5px; gap: 10px;">
-                    <label style="font-weight: bold; font-size: 11px; white-space: nowrap; color: #333;">Presença Perturbadora:</label>
-                    <div class="flexrow flex-center" style="gap: 5px; flex: 0 0 auto;">
-                        <label style="font-size: 10px; color: #555;">DT</label>
-                        <input type="number" name="system.disturbingPresence.dt" value="{{system.disturbingPresence.dt}}" 
-                               style="height: 18px; font-size: 11px; width: 30px; text-align: center;" placeholder="0">
+                {{!-- LINHA: VD + PRESENÇA PERTURBADORA --}}
+                <div class="flexrow" style="gap: 5px; margin-top: 5px; align-items: stretch;">
+                    
+                    {{!-- VD (Centralizado Manualmente) --}}
+                    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.05); border-radius: 5px; border: 1px solid #ccc; padding: 2px 5px; flex: 0 0 60px;">
+                        <label style="font-weight: bold; font-size: 11px; color: #333; margin-bottom: 2px; text-align: center; line-height: 1;">VD</label>
+                        <input type="number" name="system.attributes.vd.value" value="{{system.attributes.vd.value}}" data-dtype="Number"
+                               style="width: 100%; text-align: center; font-size: 16px; font-weight: bold; border: none; background: transparent; height: 20px; padding: 0; margin: 0;"/>
                     </div>
-                    <div class="flexrow flex-center" style="gap: 5px; flex: 0 0 auto;">
-                        <label style="font-size: 10px; color: #555;">Dano</label>
-                        <input type="text" name="system.disturbingPresence.mentalDamage" value="{{system.disturbingPresence.mentalDamage}}" 
-                               style="height: 18px; font-size: 11px; width: 60px; text-align: center;" placeholder="Ex: 2d6">
-                        <i class="fas fa-brain rollable pointer" data-action="onRollMentalDamage" title="Rolar Dano Mental" 
-                           style="color: #6a0dad; font-size: 12px; margin-left: 2px;"></i>
+
+                    {{!-- PRESENÇA PERTURBADORA --}}
+                    <div class="disturbing-presence flexrow" style="display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.05); border-radius: 5px; border: 1px solid #ccc; padding: 0 10px; gap: 15px; flex: 1;">
+                        <label style="font-weight: bold; font-size: 12px; white-space: nowrap; color: #333;">Presença Perturbadora:</label>
+                        
+                        <div class="flexrow flex-center" style="gap: 5px; flex: 0 0 auto;">
+                            <label style="font-size: 11px; color: #555; font-weight: bold;">DT</label>
+                            <input type="number" name="system.disturbingPresence.dt" value="{{system.disturbingPresence.dt}}" 
+                                   style="height: 20px; font-size: 12px; width: 40px; text-align: center; font-weight: bold;" placeholder="0">
+                        </div>
+                        
+                        <div class="flexrow flex-center" style="gap: 5px; flex: 0 0 auto;">
+                            <label style="font-size: 11px; color: #555; font-weight: bold;">Dano</label>
+                            <input type="text" name="system.disturbingPresence.mentalDamage" value="{{system.disturbingPresence.mentalDamage}}" 
+                                   style="height: 20px; font-size: 12px; width: 80px; text-align: center; font-weight: bold;" placeholder="Ex: 2d6">
+                            <i class="fas fa-brain rollable pointer" data-action="onRollMentalDamage" title="Rolar Dano Mental" 
+                               style="color: #6a0dad; font-size: 14px; margin-left: 2px;"></i>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
 
-        <div class="header-fields">
+        {{!-- CAMPOS INFERIORES --}}
+        <div class="header-fields" style="margin-top: 2px;">
+            
+            {{!-- 1ª LINHA: VIDA (PV) --}}
             <div class="resources flexrow">
                 <div class="resource flex-group-center">
                     <label class="resource-label"> {{localize 'op.PV'}} </label>
@@ -74,7 +103,42 @@
                 </div>
             </div>
 
-            {{!-- Atributos --}}
+            {{!-- 2ª LINHA: TIPO | ELEMENTO | TAMANHO --}}
+            <div class="resources flexrow" style="margin-top: 5px; margin-bottom: 5px; gap: 10px;">
+                
+                {{!-- Tipo --}}
+                <div class="resource flex-group-center">
+                    <label class="resource-label">Tipo</label>
+                    <div class="resource-content">
+                        <select name="system.details.creatureType" style="width: 100%; text-align: center;">
+                            {{selectOptions threatTypes selected=system.details.creatureType localize=false}}
+                        </select>
+                    </div>
+                </div>
+
+                {{!-- Elemento --}}
+                <div class="resource flex-group-center">
+                    <label class="resource-label">Elemento</label>
+                    <div class="resource-content">
+                        <select name="system.details.element" style="width: 100%; text-align: center;">
+                            {{selectOptions elements selected=system.details.element localize=true}}
+                        </select>
+                    </div>
+                </div>
+
+                {{!-- Tamanho --}}
+                <div class="resource flex-group-center">
+                    <label class="resource-label">Tamanho</label>
+                    <div class="resource-content">
+                        <select name="system.details.size" style="width: 100%; text-align: center;">
+                            {{selectOptions threatSizes selected=system.details.size localize=false}}
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+
+            {{!-- ATRIBUTOS --}}
             <div class="resources flexrow">
                 <div class="resource flex-group-center"><label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="dex">{{localize 'op.attDex'}}</label><div class="resource-content flexrow flex-center flex-between"><input type="text" name="system.attributes.dex.value" value="{{system.attributes.dex.value}}" data-dtype="Number" /></div></div>
                 <div class="resource flex-group-center"><label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="int">{{localize 'op.attInt'}}</label><div class="resource-content flexrow flex-center flex-between"><input type="text" name="system.attributes.int.value" value="{{system.attributes.int.value}}" data-dtype="Number" /></div></div>
@@ -83,7 +147,7 @@
                 <div class="resource flex-group-center"><label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="str">{{localize 'op.attStr'}}</label><div class="resource-content flexrow flex-center flex-between"><input type="text" name="system.attributes.str.value" value="{{system.attributes.str.value}}" data-dtype="Number" /></div></div>
             </div>
 
-            {{!-- Perícias --}}
+            {{!-- PERÍCIAS --}}
             <div class="resources threat-skills-container" style="margin-top: 5px; display: grid; grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; gap: 8px 10px; justify-content: space-around;">
                 {{#each threatSkills as |skill|}}
                 <div class="resource flex-group-center" style="display: flex; flex-direction: column; align-items: center; justify-content: flex-end; width: 100%;">
@@ -111,6 +175,7 @@
                 {{/each}}
             </div>
 
+            {{!-- DEFESA E MOVIMENTO --}}
             <div class="resources flexrow">
                 <div class="resource flex-group-center">
                     <label class="resource-label">{{localize 'op.defense'}}</label>
@@ -126,7 +191,7 @@
                 </div>
             </div>
             
-            {{!-- SEÇÃO DE RESISTÊNCIAS E VULNERABILIDADES --}}
+            {{!-- RESISTÊNCIAS E VULNERABILIDADES --}}
             <div class="resist-vuln-container" style="margin-top: 5px; padding: 5px; background: rgba(0, 0, 0, 0.05); border-radius: 4px; border: 1px solid #999;">
                 <div class="flexrow" style="align-items: center; margin-bottom: 4px;">
                     <label style="font-weight: bold; flex: 0 0 110px; font-size: 13px;">Resistências:</label>
@@ -146,25 +211,13 @@
 
     {{!-- NAVEGAÇÃO MANUAL --}}
     <nav class="sheet-tabs tabs" data-group="primary">
-        
-        {{!-- 1. Ataques --}}
         <a class="item {{#ifEquals activeTab 'attacks'}}active{{/ifEquals}}" data-action="onTab" data-tab="attacks">Ataques</a>
-        
-        {{!-- 2. Habilidades --}}
         <a class="item {{#ifEquals activeTab 'abilities'}}active{{/ifEquals}}" data-action="onTab" data-tab="abilities">Habilidades</a>
-        
-        {{!-- 3. Enigma (Ícone ao lado do Texto) --}}
         <a class="item {{#ifEquals activeTab 'enigma'}}active{{/ifEquals}}" data-action="onTab" data-tab="enigma" 
            style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px;">
-            
-            {{!-- Imagem do ícone --}}
-            <img src="https://i.imgur.com/SAQbBXQ.png" 
-                 style="height: 18px; width: auto; border: none; margin: 0; padding: 0;" /> 
-            
+            <img src="https://i.imgur.com/SAQbBXQ.png" style="height: 18px; width: auto; border: none; margin: 0; padding: 0;" /> 
             <span>Enigma</span>
         </a>
-
-        {{!-- 4. Efeitos --}}
         <a class="item {{#ifEquals activeTab 'effects'}}active{{/ifEquals}}" data-action="onTab" data-tab="effects">Efeitos</a>
     </nav>
 
@@ -306,10 +359,10 @@
                             <div class='effect-source'>{{localize 'EFFECT.TabDuration'}}</div>
                             <div class='effect-controls flexrow'>
                                 <a class='effect-control' data-action='createDoc' data-document-class='ActiveEffect'
-                                    data-origin="{{@root.actor.uuid}}" data-img="icons/svg/aura.svg"
-                                    {{#if (eq section.type "inactive")}} data-disabled="true"
-                                    {{else if (eq section.type "temporary")}} data-duration.rounds="1" {{/if}}
-                                    title='{{localize "op.effectCreate"}}'>
+                                   data-origin="{{@root.actor.uuid}}" data-img="icons/svg/aura.svg"
+                                   {{#if (eq section.type "inactive")}} data-disabled="true"
+                                   {{else if (eq section.type "temporary")}} data-duration.rounds="1" {{/if}}
+                                   title='{{localize "op.effectCreate"}}'>
                                     <i class='fas fa-plus'></i>
                                 </a>
                             </div>

@@ -84,6 +84,9 @@ export class OrdemThreatSheet extends api.HandlebarsApplicationMixin(sheets.Acto
 			owner: this.document.isOwner,
 			effects: prepareActiveEffectCategories(this.actor.allApplicableEffects()),
             optionDegree: CONFIG.op.dropdownDegree,
+			elements: CONFIG.op.dropdownElement,
+			threatTypes: {"creature": "Criatura","person": "Pessoa", "animal": "Animal"},
+			threatSizes: {"tiny": "Minúsculo","small": "Pequeno","medium": "Médio","large": "Grande","huge": "Enorme","colossal": "Colossal"},
             tabs: this._getTabs(),
             activeTab: this.tabGroups.primary
 		});
