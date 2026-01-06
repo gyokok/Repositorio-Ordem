@@ -247,14 +247,23 @@ op.dropdownProficiency = {
  */
 op.dropdownDamageType = {
 	cuttingDamage: 'op.damageTypeChoices.cuttingDamage',
-	impactDamage: 'op.damageTypeChoices.impactDamage',
-	piercingDamage: 'op.damageTypeChoices.piercingDamage',
-	ballisticDamage: 'op.damageTypeChoices.ballisticDamage',
-	bloodDamage: 'op.damageTypeChoices.bloodDamage',
-	deathDamage: 'op.damageTypeChoices.deathDamage',
-	knowledgeDamage: 'op.damageTypeChoices.knowledgeDamage',
-	energyDamage: 'op.damageTypeChoices.energyDamage',
-	fearDamage: 'op.damageTypeChoices.fearDamage'
+    impactDamage: 'op.damageTypeChoices.impactDamage',
+    piercingDamage: 'op.damageTypeChoices.piercingDamage',
+    ballisticDamage: 'op.damageTypeChoices.ballisticDamage',
+    
+    // Elementos Paranormais
+    bloodDamage: 'op.damageTypeChoices.bloodDamage',
+    deathDamage: 'op.damageTypeChoices.deathDamage',
+    knowledgeDamage: 'op.damageTypeChoices.knowledgeDamage',
+    energyDamage: 'op.damageTypeChoices.energyDamage',
+    fearDamage: 'op.damageTypeChoices.fearDamage',
+
+    // --- NOVOS DANOS ADICIONADOS ---
+    fireDamage: 'op.damageTypeChoices.fireDamage',
+    coldDamage: 'op.damageTypeChoices.coldDamage',
+    eletricDamage: 'op.damageTypeChoices.eletricDamage',
+    chemicalDamage: 'op.damageTypeChoices.chemicalDamage',
+    mentalDamage: 'op.damageTypeChoices.mentalDamage'
 };
 
 /**

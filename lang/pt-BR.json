@@ -36,11 +36,11 @@
 	"MACRO.opMultipleTargetsWarn": "O ator controlado '{actor}' tem mais de um {type} com o mesmo nome '{name}'. O primeiro correspondente será escolhido.",
 	"WARN.overWeight": "O que você carrega não pode ultrapassar o dobro do seu peso máximo!",
 	"CHAT.RollBlind": "Rolagem Cega pro MJ",
-  "CHAT.RollDefault": "Modo de Rolagem Padrão",
-  "CHAT.RollPublic": "Rolagem Pública",
-  "CHAT.RollPrivate": "Rolagem Privada pro MJ",
-  "CHAT.RollSelf": "Rolagem Pessoal",
-  "CHAT.RollTables": "Tabelas de Rolagem",
+	  "CHAT.RollDefault": "Modo de Rolagem Padrão",
+	  "CHAT.RollPublic": "Rolagem Pública",
+	  "CHAT.RollPrivate": "Rolagem Privada pro MJ",
+	  "CHAT.RollSelf": "Rolagem Pessoal",
+	  "CHAT.RollTables": "Tabelas de Rolagem",
 
 	"WORLD.GameSystem": "Sistema de Jogo",
 	"op.sidebar.updateNotes": "Um sistema não-oficial na versão",
@@ -320,16 +320,22 @@
 	},
 
 	"op.damageTypeChoices": {
-		"cuttingDamage": "Dano de Corte (C)",
-		"impactDamage": "Dano de Impacto (I)",
-		"piercingDamage": "Dano Perfurante (P)",
-		"ballisticDamage": "Dano Balístico (B)",
+		"cuttingDamage": "Corte (C)",
+		"impactDamage": "Impacto (I)",
+		"piercingDamage": "Perfurante (P)",
+		"ballisticDamage": "Balístico (B)",
 		
-        "bloodDamage": "Dano de Sangue",
-        "deathDamage": "Dano de Morte",
-        "knowledgeDamage": "Dano de Conhecimento",
-        "energyDamage": "Dano de Energia",
-        "fearDamage": "Dano de Medo"
+        "bloodDamage": "Sangue",
+        "deathDamage": "Morte",
+        "knowledgeDamage": "Conhecimento",
+        "energyDamage": "Energia",
+        "fearDamage": "Medo",
+		
+		"fireDamage": "Fogo",
+        "eletricDamage": "Eletricidade",
+        "coldDamage": "Frio",
+        "chemicalDamage": "Químico",
+        "mentalDamage": "Mental"
         
 	},
 
@@ -343,7 +349,13 @@
         "deathDamage": "Morte",
         "knowledgeDamage": "Conhecimento",
         "energyDamage": "Energia",
-        "fearDamage": "Medo"
+        "fearDamage": "Medo",
+		
+		"fireDamage": "Fogo",
+        "eletricDamage": "Eletricidade",
+        "coldDamage": "Frio",
+        "chemicalDamage": "Químico",
+        "mentalDamage": "Mental"
         
 	},
 
@@ -352,16 +364,20 @@
 		"paranormal": "Poder Paranormal",
 		"path": "Habilidade de Trilha",
 		"origin": "Poder de Origem",
+		"general": "Habilidade Geral",
 		"complication": "Complicação",
 		"ability": "Outra Habilidade"
 	},
 
 	"op.abilitiesAbv": {
-		"class": "Poderes de Classe",
-		"paranormal": "Poderes Paranormais",
-		"path": "Habilidades de Trilha",
-		"ability": "Outras Habilidades"
-	},
+        "origin": "Poder de Origem",
+        "class": "Poderes de Classe",
+        "paranormal": "Poderes Paranormais",
+        "path": "Habilidades de Trilha",
+        "general": "Habilidades Gerais",
+				"complication": "Complicações",
+        "ability": "Outras Habilidades"
+    },
 
 	"op.improvised": "Improvisada",
 	"op.throwable": "Arremessável",

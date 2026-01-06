@@ -1,20 +1,44 @@
 <section class="sheet-body flexcol" autocomplete="off" style="height: 100%;">
     {{!-- CSS INLINE --}}
     <style>
-        .sheet-body .tab { display: none; }
-        .sheet-body .tab.active { display: block; }
-        .sheet-tabs .item.active { text-decoration: underline; font-weight: bold; text-shadow: 0 0 5px var(--color-shadow-primary); }
+        /* --- LAYOUT GERAL --- */
+        .sheet-body { 
+            height: 100%; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+        }
         
-        /* Estilo para a área do Enigma */
+        .sheet-body .tab { 
+            display: none; 
+            height: 100%; 
+            overflow-y: auto; 
+            padding-right: 5px; 
+        }
+        .sheet-body .tab.active { display: block; }
+
+        .sheet-tabs .item.active { text-decoration: underline; font-weight: bold; text-shadow: 0 0 5px var(--color-shadow-primary); }
+        .sheet-tabs .item { display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .sheet-tabs .item img { border: none; margin: 0; padding: 0; vertical-align: middle; }
+
+        /* --- ABA ENIGMA --- */
+        .sheet-body .tab.enigma {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden !important; 
+        }
+
         .enigma-container {
             padding: 10px;
             background: rgba(0, 0, 0, 0.03);
             border: 1px solid #999;
             border-radius: 5px;
-            height: 100%;
+            height: 100%; 
             display: flex;
             flex-direction: column;
         }
+
         .enigma-header {
             font-family: 'Special Elite', 'Courier New', serif;
             font-size: 1.5em;
@@ -22,9 +46,74 @@
             border-bottom: 2px solid #000;
             margin-bottom: 10px;
             padding-bottom: 5px;
+            flex: 0 0 auto;
         }
         
-        /* Imagem da Criatura */
+        /* --- EDITOR DE TEXTO --- */
+        .enigma-editor {
+            flex: 1; 
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.5);
+            min-height: 0; 
+            position: relative;
+            overflow: hidden;
+        }
+
+        .enigma-editor .editor {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .enigma-editor .editor-edit {
+            flex: 0 0 auto;
+            position: absolute;
+            top: 5px;
+            right: 15px;
+            z-index: 50;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 4px 8px;
+            cursor: pointer;
+            color: #333;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .enigma-editor .editor-edit:hover {
+            background: #fff;
+            color: #000;
+        }
+        
+        .enigma-editor .prosemirror-menu,
+        .enigma-editor .tox-toolbar {
+            flex: 0 0 auto;
+            width: 100%;
+            z-index: 5;
+            border-bottom: 1px solid #ccc;
+            background: #f0f0f0;
+        }
+
+        .enigma-editor .editor-content {
+            flex: 1; 
+            height: 100%; 
+            overflow-y: auto !important; 
+            padding: 10px 15px;
+            padding-top: 35px;
+            text-align: justify;
+            box-sizing: border-box; 
+        }
+
+        .enigma-editor .prosemirror,
+        .enigma-editor .tox-tinymce {
+            flex: 1;
+            height: 100% !important;
+            overflow-y: auto !important;
+            border: none !important;
+        }
+
         .threat-profile-img {
             flex: 0 0 110px;
             height: 110px;
@@ -37,17 +126,12 @@
         }
     </style>
 
-    {{!-- HEADER (CABEÇALHO) --}}
+    {{!-- HEADER --}}
     <header class="sheet-header-op">
         <div class="header-identify align-center flex" style="flex-wrap: nowrap; align-items: flex-start;">
-            
-            {{!-- COLUNA ESQUERDA: APENAS IMAGEM --}}
             <img class="threat-profile-img" src="{{actor.img}}" data-edit="img" data-action="onEditImage" title="{{actor.name}}" />
             
-            {{!-- COLUNA DIREITA --}}
             <div class="flexcol" style="flex: 1; justify-content: flex-start; gap: 5px;">
-                
-                {{!-- NOME --}}
                 <div class="flexrow flex-center">
                     <h1 class="charname" style="margin: 0; flex: 1;">
                         <input name="name" type="text" value="{{actor.name}}" placeholder="Nome da Ameaça" 
@@ -55,26 +139,20 @@
                     </h1>
                 </div>
 
-                {{!-- LINHA: VD + PRESENÇA PERTURBADORA --}}
                 <div class="flexrow" style="gap: 5px; margin-top: 5px; align-items: stretch;">
-                    
-                    {{!-- VD --}}
                     <div style="background: rgba(0, 0, 0, 0.05); border-radius: 5px; border: 1px solid #ccc; padding: 2px 5px; flex: 0 0 60px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                         <label style="font-weight: bold; font-size: 11px; color: #333; margin-bottom: 2px; text-align: center; width: 100%;">VD</label>
                         <input type="number" name="system.attributes.vd.value" value="{{system.attributes.vd.value}}" data-dtype="Number"
                                style="width: 100%; text-align: center; font-size: 16px; font-weight: bold; border: none; background: transparent; height: 20px; padding: 0;"/>
                     </div>
 
-                    {{!-- PRESENÇA PERTURBADORA --}}
                     <div class="disturbing-presence flexrow flex-center" style="background: rgba(0, 0, 0, 0.05); border-radius: 5px; border: 1px solid #ccc; padding: 0 10px; gap: 15px; flex: 1;">
                         <label style="font-weight: bold; font-size: 12px; white-space: nowrap; color: #333;">Presença Perturbadora:</label>
-                        
                         <div class="flexrow flex-center" style="gap: 5px; flex: 0 0 auto;">
                             <label style="font-size: 11px; color: #555;">DT</label>
                             <input type="number" name="system.disturbingPresence.dt" value="{{system.disturbingPresence.dt}}" 
                                    style="height: 20px; font-size: 12px; width: 40px; text-align: center;" placeholder="0">
                         </div>
-                        
                         <div class="flexrow flex-center" style="gap: 5px; flex: 0 0 auto;">
                             <label style="font-size: 11px; color: #555;">Dano</label>
                             <input type="text" name="system.disturbingPresence.mentalDamage" value="{{system.disturbingPresence.mentalDamage}}" 
@@ -83,14 +161,11 @@
                                style="color: #6a0dad; font-size: 14px; margin-left: 2px;"></i>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
 
         <div class="header-fields" style="margin-top: 2px;">
-            
-            {{!-- 1ª LINHA: VIDA (PV) --}}
             <div class="resources flexrow">
                 <div class="resource flex-group-center">
                     <label class="resource-label"> {{localize 'op.PV'}} </label>
@@ -102,10 +177,7 @@
                 </div>
             </div>
 
-            {{!-- 2ª LINHA: TIPO | ELEMENTO | TAMANHO --}}
             <div class="resources flexrow" style="margin-top: 5px; margin-bottom: 5px; gap: 10px;">
-                
-                {{!-- Tipo --}}
                 <div class="resource flex-group-center">
                     <label class="resource-label">Tipo</label>
                     <div class="resource-content">
@@ -114,8 +186,6 @@
                         </select>
                     </div>
                 </div>
-
-                {{!-- Elemento --}}
                 <div class="resource flex-group-center">
                     <label class="resource-label">Elemento</label>
                     <div class="resource-content">
@@ -124,8 +194,6 @@
                         </select>
                     </div>
                 </div>
-
-                {{!-- Tamanho --}}
                 <div class="resource flex-group-center">
                     <label class="resource-label">Tamanho</label>
                     <div class="resource-content">
@@ -134,44 +202,33 @@
                         </select>
                     </div>
                 </div>
-
             </div>
 
-            {{!-- ATRIBUTOS (REORDENADOS: AGI, FOR, INT, PRE, VIG) --}}
             <div class="resources flexrow">
-                {{!-- 1. AGI (dex) --}}
                 <div class="resource flex-group-center">
                     <label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="dex">{{localize 'op.attDex'}}</label>
                     <div class="resource-content flexrow flex-center flex-between">
                         <input type="text" name="system.attributes.dex.value" value="{{system.attributes.dex.value}}" data-dtype="Number" />
                     </div>
                 </div>
-                
-                {{!-- 2. FOR (str) --}}
                 <div class="resource flex-group-center">
                     <label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="str">{{localize 'op.attStr'}}</label>
                     <div class="resource-content flexrow flex-center flex-between">
                         <input type="text" name="system.attributes.str.value" value="{{system.attributes.str.value}}" data-dtype="Number" />
                     </div>
                 </div>
-
-                {{!-- 3. INT (int) --}}
                 <div class="resource flex-group-center">
                     <label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="int">{{localize 'op.attInt'}}</label>
                     <div class="resource-content flexrow flex-center flex-between">
                         <input type="text" name="system.attributes.int.value" value="{{system.attributes.int.value}}" data-dtype="Number" />
                     </div>
                 </div>
-
-                {{!-- 4. PRE (pre) --}}
                 <div class="resource flex-group-center">
                     <label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="pre">{{localize 'op.attPre'}}</label>
                     <div class="resource-content flexrow flex-center flex-between">
                         <input type="text" name="system.attributes.pre.value" value="{{system.attributes.pre.value}}" data-dtype="Number" />
                     </div>
                 </div>
-
-                {{!-- 5. VIG (vit) --}}
                 <div class="resource flex-group-center">
                     <label class="resource-label rollable pointer" data-action="onRollAttributeTest" data-key="vit">{{localize 'op.attVit'}}</label>
                     <div class="resource-content flexrow flex-center flex-between">
@@ -180,7 +237,6 @@
                 </div>
             </div>
 
-            {{!-- PERÍCIAS --}}
             <div class="resources threat-skills-container" style="margin-top: 5px; display: grid; grid-template-rows: repeat(2, 1fr); grid-auto-flow: column; gap: 8px 10px; justify-content: space-around;">
                 {{#each threatSkills as |skill|}}
                 <div class="resource flex-group-center" style="display: flex; flex-direction: column; align-items: center; justify-content: flex-end; width: 100%;">
@@ -208,8 +264,35 @@
                 {{/each}}
             </div>
 
-            {{!-- DEFESA E MOVIMENTO --}}
-            <div class="resources flexrow">
+            <div class="resources flexrow" style="margin-top: 5px;">
+                <div class="resource flex-group-center">
+                    <label class="resource-label">
+                        <a class="config-button" data-action="openResistanceConfig" title="Configurar Resistências" style="text-decoration: none; color: inherit;">
+                            <i class="fas fa-shield-alt"></i> Resistências <i class="fas fa-cog" style="font-size: 0.8em; opacity: 0.5;"></i>
+                        </a>
+                    </label>
+                    
+                    <div class="resource-content" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; padding: 2px; align-items: center; min-height: 30px;">
+                        {{#each viewResistances as |res key|}}
+                            {{#if res.isVisible}}
+                                <div class="resistance-tag" style="font-size: 10px; border: 1px solid #7a7971; padding: 2px; border-radius: 4px; background: rgba(0,0,0,0.05); white-space: nowrap; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 100%;" 
+                                    title="{{res.translatedLabel}}">
+                                    <span style="font-weight: bold; text-transform: uppercase; font-size: 9px; margin-bottom: 1px;">
+                                        {{res.translatedLabel}}
+                                    </span>
+                                    <div style="display: flex; gap: 3px; align-items: center;">
+                                        {{#if (gt res.value 0)}}<span style="font-size: 11px; font-weight: bold;">{{res.value}}</span>{{/if}}
+                                        {{#if res.immune}}<i class="fas fa-shield-alt" style="color: #2c3e50; font-size: 10px;" title="Imune"></i>{{/if}}
+                                        {{#if res.vulnerable}}<i class="fas fa-heart-broken" style="color: #c0392b; font-size: 10px;" title="Vulnerável"></i>{{/if}}
+                                    </div>
+                                </div>
+                            {{/if}}
+                        {{/each}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="resources flexrow" style="margin-top: 5px;">
                 <div class="resource flex-group-center">
                     <label class="resource-label">{{localize 'op.defense'}}</label>
                     <div class="resource-content flexrow flex-center flex-between">
@@ -219,37 +302,20 @@
                 <div class="resource flex-group-center">
                     <label class="resource-label">{{localize 'op.deslocamento'}}</label>
                     <div class="resource-content flexrow flex-center flex-between">
-                        <input type="text" name="system.attributes.movement.walk" value="{{system.attributes.movement.walk}}" data-dtype="String" />
+                        <input type="text" name="system.attributes.movement.walk" value="{{system.attributes.movement.walk}}" data-dtype="Number" />
                     </div>
                 </div>
             </div>
-            
-            {{!-- RESISTÊNCIAS E VULNERABILIDADES --}}
-            <div class="resist-vuln-container" style="margin-top: 5px; padding: 5px; background: rgba(0, 0, 0, 0.05); border-radius: 4px; border: 1px solid #999;">
-                <div class="flexrow" style="align-items: center; margin-bottom: 4px;">
-                    <label style="font-weight: bold; flex: 0 0 110px; font-size: 13px;">Resistências:</label>
-                    <input type="text" name="system.defense.damageResistances" value="{{system.defense.damageResistances}}" 
-                           placeholder="Ex: Balístico 5, Corte 2, Sangue 10" 
-                           style="border: none; border-bottom: 1px solid #777; background: transparent; height: 20px;"/>
-                </div>
-                <div class="flexrow" style="align-items: center;">
-                    <label style="font-weight: bold; flex: 0 0 110px; font-size: 13px;">Vulnerabilidades:</label>
-                    <input type="text" name="system.vulnerabilities" value="{{system.vulnerabilities}}" 
-                           placeholder="Ex: Morte, Conhecimento" 
-                           style="border: none; border-bottom: 1px solid #777; background: transparent; height: 20px;"/>
-                </div>
-            </div>
+
         </div>
     </header>
 
-    {{!-- NAVEGAÇÃO MANUAL --}}
+    {{!-- NAVEGAÇÃO --}}
     <nav class="sheet-tabs tabs" data-group="primary">
         <a class="item {{#ifEquals activeTab 'attacks'}}active{{/ifEquals}}" data-action="onTab" data-tab="attacks">Ataques</a>
         <a class="item {{#ifEquals activeTab 'abilities'}}active{{/ifEquals}}" data-action="onTab" data-tab="abilities">Habilidades</a>
-        <a class="item {{#ifEquals activeTab 'enigma'}}active{{/ifEquals}}" data-action="onTab" data-tab="enigma" 
-           style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px;">
-            <img src="https://i.imgur.com/SAQbBXQ.png" style="height: 18px; width: auto; border: none; margin: 0; padding: 0;" /> 
-            <span>Enigma</span>
+        <a class="item {{#ifEquals activeTab 'enigma'}}active{{/ifEquals}}" data-action="onTab" data-tab="enigma" style="display: flex; gap: 8px;">
+            <img src="https://i.imgur.com/SAQbBXQ.png" style="height: 18px;" /> <span>Enigma</span>
         </a>
         <a class="item {{#ifEquals activeTab 'effects'}}active{{/ifEquals}}" data-action="onTab" data-tab="effects">Efeitos</a>
     </nav>
@@ -257,7 +323,6 @@
     {{!-- CONTEÚDO PRINCIPAL --}}
     <div class="sheet-main-content" style="flex: 1; overflow-y: auto; overflow-x: hidden; padding-right: 5px;">
         
-        {{!-- 1. ABA DE ATAQUES --}}
         <div class="tab attacks {{#ifEquals activeTab 'attacks'}}active{{/ifEquals}}" data-group="primary" data-tab="attacks">
             <ol class="items-list">
                 <li class="item flexrow items-header">
@@ -304,7 +369,6 @@
             </ol>
         </div>
 
-        {{!-- 2. ABA DE HABILIDADES --}}
         <div class="tab abilities {{#ifEquals activeTab 'abilities'}}active{{/ifEquals}}" data-group="primary" data-tab="abilities">
             <ol class="items-list">
                 <li class="item flexrow items-header">
@@ -370,15 +434,9 @@
             <div class="enigma-container">
                 <h2 class="enigma-header">ENIGMA DE MEDO</h2>
                 
-                {{!-- Div com height:auto para permitir expansão --}}
-                <div style="flex: 1; height: auto; min-height: 200px;">
-                    {{#if editable}} 
-                        <prose-mirror name="system.details.fearRiddle" data-document-u-u-i-d="{{actor.uuid}}" value="{{system.details.fearRiddle}}" collaborate="true" toggled="true">
-                            {{{enrichedFearRiddle}}}
-                        </prose-mirror>
-                    {{else}}
-                        {{{enrichedFearRiddle}}}
-                    {{/if}}
+                {{!-- Wrapper para o Editor: button=true ativa o lápis --}}
+                <div class="enigma-editor">
+                    {{editor enrichedFearRiddle target="system.details.fearRiddle" button=true editable=editable engine="prosemirror" collaborate=true}}
                 </div>
             </div>
         </div>
