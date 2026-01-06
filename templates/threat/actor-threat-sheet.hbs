@@ -21,99 +21,7 @@
         .sheet-tabs .item { display: flex; align-items: center; justify-content: center; gap: 5px; }
         .sheet-tabs .item img { border: none; margin: 0; padding: 0; vertical-align: middle; }
 
-        /* --- ABA ENIGMA --- */
-        .sheet-body .tab.enigma {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden !important; 
-        }
-
-        .enigma-container {
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.03);
-            border: 1px solid #999;
-            border-radius: 5px;
-            height: 100%; 
-            display: flex;
-            flex-direction: column;
-        }
-
-        .enigma-header {
-            font-family: 'Special Elite', 'Courier New', serif;
-            font-size: 1.5em;
-            text-align: center;
-            border-bottom: 2px solid #000;
-            margin-bottom: 10px;
-            padding-bottom: 5px;
-            flex: 0 0 auto;
-        }
-        
-        /* --- EDITOR DE TEXTO --- */
-        .enigma-editor {
-            flex: 1; 
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background: rgba(255, 255, 255, 0.5);
-            min-height: 0; 
-            position: relative;
-            overflow: hidden;
-        }
-
-        .enigma-editor .editor {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .enigma-editor .editor-edit {
-            flex: 0 0 auto;
-            position: absolute;
-            top: 5px;
-            right: 15px;
-            z-index: 50;
-            background: rgba(255,255,255,0.9);
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            padding: 4px 8px;
-            cursor: pointer;
-            color: #333;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        }
-        .enigma-editor .editor-edit:hover {
-            background: #fff;
-            color: #000;
-        }
-        
-        .enigma-editor .prosemirror-menu,
-        .enigma-editor .tox-toolbar {
-            flex: 0 0 auto;
-            width: 100%;
-            z-index: 5;
-            border-bottom: 1px solid #ccc;
-            background: #f0f0f0;
-        }
-
-        .enigma-editor .editor-content {
-            flex: 1; 
-            height: 100%; 
-            overflow-y: auto !important; 
-            padding: 10px 15px;
-            padding-top: 35px;
-            text-align: justify;
-            box-sizing: border-box; 
-        }
-
-        .enigma-editor .prosemirror,
-        .enigma-editor .tox-tinymce {
-            flex: 1;
-            height: 100% !important;
-            overflow-y: auto !important;
-            border: none !important;
-        }
-
+        /* --- ESTILOS GERAIS --- */
         .threat-profile-img {
             flex: 0 0 110px;
             height: 110px;
@@ -123,6 +31,48 @@
             border-radius: 5px;
             cursor: pointer;
             margin-right: 15px;
+        }
+
+        /* --- ABA ENIGMA (Estilo Biografia) --- */
+        .sheet-body .tab.enigma {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden !important; 
+        }
+
+        .enigma-container {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid #999;
+            border-radius: 5px;
+            height: 100%; 
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto; /* Rolagem no container */
+        }
+
+        /* Título Estilizado */
+        .actor-title-header {
+            font-family: 'Special Elite', 'Courier New', serif;
+            font-size: 1.4em;
+            font-weight: bold;
+            border-bottom: 2px solid #333;
+            margin-bottom: 10px;
+            padding-bottom: 2px;
+            display: block;
+            text-transform: uppercase;
+            color: #191813;
+        }
+
+        /* Editor ProseMirror Nativo */
+        prose-mirror {
+            min-height: 200px;
+            flex: 1;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 5px;
+            border-radius: 4px;
+            color: #191813;
         }
     </style>
 
@@ -246,6 +196,7 @@
                                    style="font-size: 11px; height: 16px; text-align: center; width: 65px; border: none; border-bottom: 1px solid #7a7971; background: transparent; padding: 0;" />
                             <i class="fas fa-dice rollable pointer" data-action="onRollSkill" data-key="{{skill.key}}" data-attr="{{skill.attr}}" data-label="{{skill.label}}" style="font-size: 10px; color: #4b4a44;"></i>
                         </div>
+                    {{!-- CORREÇÃO DO ERRO AQUI: Removido # do else --}}
                     {{else}}
                         <label class="resource-label rollable pointer" data-action="onRollSkill" data-key="{{skill.key}}" data-attr="{{skill.attr}}" data-label="{{skill.label}}" 
                                style="font-size: 11px; margin-bottom: 3px; display: flex; justify-content: center; align-items: center; text-align: center; width: 100%;">
@@ -429,15 +380,18 @@
             </div>
         </div>
 
-        {{!-- 3. ABA DE ENIGMA --}}
+        {{!-- 3. ABA DE ENIGMA (Estilo Biografia - Solução Moderna) --}}
         <div class="tab enigma {{#ifEquals activeTab 'enigma'}}active{{/ifEquals}}" data-group="primary" data-tab="enigma">
             <div class="enigma-container">
-                <h2 class="enigma-header">ENIGMA DE MEDO</h2>
+                <span class="actor-title-header">Enigma de Medo</span>
                 
-                {{!-- Wrapper para o Editor: button=true ativa o lápis --}}
-                <div class="enigma-editor">
-                    {{editor enrichedFearRiddle target="system.details.fearRiddle" button=true editable=editable engine="prosemirror" collaborate=true}}
-                </div>
+                {{#if editable}}
+                    <prose-mirror name="system.details.fearRiddle" data-document-u-u-i-d="{{actor.uuid}}" value="{{system.details.fearRiddle}}" collaborate="true" toggled="true">
+                        {{{enrichedFearRiddle}}}
+                    </prose-mirror>
+                {{else}}
+                    {{{enrichedFearRiddle}}}
+                {{/if}}
             </div>
         </div>
 
