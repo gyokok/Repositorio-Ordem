@@ -139,7 +139,7 @@
 	"op.add": "Adicionar",
 
 	"op.degreeTrainingChoices": {
-		"dest": "Destreinado",
+		"dest": "------",
 		"trei": "Treinado",
 		"vet": "Veterano",
 		"expe": "Expert"
@@ -278,7 +278,8 @@
 		"movement": "Movimento",
 		"default": "Padrão",
 		"complete": "Completa",
-		"reaction": "Reação"
+		"reaction": "Reação",
+		"passive": "Passiva"
 	},
 
 	"op.weaponTypeChoices": {
