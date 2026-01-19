@@ -132,7 +132,7 @@
 	"op.Add": "Add",
 
 	"op.degreeTrainingChoices": {
-		"dest": ""------"",
+		"dest": "------",
 		"trei": "Trained",
 		"vet": "Veteran",
 		"expe": "Expert"

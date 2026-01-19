@@ -89,26 +89,30 @@
                     </h1>
                 </div>
 
-                <div class="flexrow" style="gap: 5px; margin-top: 5px; align-items: stretch;">
+                <div class="flexrow" style="display: flex; flex-wrap: nowrap; gap: 5px; margin-top: 5px; align-items: stretch; width: 100%;">
+                    
                     <div style="background: rgba(0, 0, 0, 0.05); border-radius: 5px; border: 1px solid #ccc; padding: 2px 5px; flex: 0 0 60px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                         <label style="font-weight: bold; font-size: 11px; color: #333; margin-bottom: 2px; text-align: center; width: 100%;">VD</label>
                         <input type="number" name="system.attributes.vd.value" value="{{system.attributes.vd.value}}" data-dtype="Number"
                                style="width: 100%; text-align: center; font-size: 16px; font-weight: bold; border: none; background: transparent; height: 20px; padding: 0;"/>
                     </div>
 
-                    <div class="disturbing-presence flexrow flex-center" style="background: rgba(0, 0, 0, 0.05); border-radius: 5px; border: 1px solid #ccc; padding: 0 10px; gap: 15px; flex: 1;">
-                        <label style="font-weight: bold; font-size: 16px; white-space: nowrap; color: #333;">Presença Perturbadora:</label>
-                        <div class="flexrow flex-center" style="gap: 5px; flex: 0 0 auto;">
-                            <label style="font-size: 11px; color: #555;">DT</label>
+                    <div class="disturbing-presence" style="background: rgba(0, 0, 0, 0.05); border-radius: 5px; border: 1px solid #ccc; padding: 0 10px; flex: 1; display: flex; align-items: center; justify-content: center; gap: 20px;">
+                        <label style="font-weight: bold; font-size: 16px; white-space: nowrap; color: #333; margin-right: 5px;">Presença Perturbadora:</label>
+                        
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <label style="font-size: 11px; color: #555; font-weight: bold;">DT</label>
                             <input type="number" name="system.disturbingPresence.dt" value="{{system.disturbingPresence.dt}}" 
-                                   style="height: 20px; font-size: 12px; width: 40px; text-align: center;" placeholder="0">
+                                   style="height: 22px; font-size: 12px; width: 40px; text-align: center; border: 1px solid #999; border-radius: 3px; background: rgba(255,255,255,0.5);" placeholder="0">
                         </div>
-                        <div class="flexrow flex-center" style="gap: 5px; flex: 0 0 auto;">
-                            <label style="font-size: 11px; color: #555;">Dano</label>
+
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <label style="font-size: 11px; color: #555; font-weight: bold;">Dano</label>
                             <input type="text" name="system.disturbingPresence.mentalDamage" value="{{system.disturbingPresence.mentalDamage}}" 
-                                   style="height: 20px; font-size: 12px; width: 80px; text-align: center;" placeholder="Ex: 2d6">
-                            <i class="fas fa-brain rollable pointer" data-action="onRollMentalDamage" title="Rolar Dano Mental" 
-                               style="color: #6a0dad; font-size: 14px; margin-left: 2px;"></i>
+                                   style="height: 22px; font-size: 12px; width: 80px; text-align: center; border: 1px solid #999; border-radius: 3px; background: rgba(255,255,255,0.5);" placeholder="Ex: 2d6">
+                            
+                            <i class="fa-solid fa-brain rollable pointer" data-action="onRollMentalDamage" title="Rolar Dano Mental" 
+                               style="color: #6a0dad; font-size: 16px; margin-left: 4px;"></i>
                         </div>
                     </div>
                 </div>
@@ -196,7 +200,6 @@
                                    style="font-size: 11px; height: 16px; text-align: center; width: 65px; border: none; border-bottom: 1px solid #7a7971; background: transparent; padding: 0;" />
                             <i class="fas fa-dice rollable pointer" data-action="onRollSkill" data-key="{{skill.key}}" data-attr="{{skill.attr}}" data-label="{{skill.label}}" style="font-size: 10px; color: #4b4a44;"></i>
                         </div>
-                    {{!-- CORREÇÃO DO ERRO AQUI: Removido # do else --}}
                     {{else}}
                         <label class="resource-label rollable pointer" data-action="onRollSkill" data-key="{{skill.key}}" data-attr="{{skill.attr}}" data-label="{{skill.label}}" 
                                style="font-size: 11px; margin-bottom: 3px; display: flex; justify-content: center; align-items: center; text-align: center; width: 100%;">
@@ -227,7 +230,7 @@
                         {{#each viewResistances as |res key|}}
                             {{#if res.isVisible}}
                                 <div class="resistance-tag" style="font-size: 10px; border: 1px solid #7a7971; padding: 2px; border-radius: 4px; background: rgba(0,0,0,0.05); white-space: nowrap; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 100%;" 
-                                    title="{{res.translatedLabel}}">
+                                     title="{{res.translatedLabel}}">
                                     <span style="font-weight: bold; text-transform: uppercase; font-size: 9px; margin-bottom: 1px;">
                                         {{res.translatedLabel}}
                                     </span>
@@ -381,22 +384,22 @@
         </div>
 
         {{!-- 3. ABA DE ENIGMA (Estilo Biografia - Solução Moderna) --}}
-		<div class="tab enigma {{#if (eq activeTab 'enigma')}}active{{/if}}" data-group="primary" data-tab="enigma">
-			<div class="enigma-container">
-				<span class="actor-title-header">Enigma de Medo</span>        
-				<div style="flex: 1; display: flex; flex-direction: column;">
-					{{#if editable}}
-						<prose-mirror name="system.details.fearRiddle" data-document-u-u-i-d="{{actor.uuid}}" value="{{system.details.fearRiddle}}" collaborate="true" toggled="true">
-							{{{enrichedFearRiddle}}}
-						</prose-mirror>
-					{{else}}
-						<div style="padding: 10px; background: rgba(255,255,255,0.5); border: 1px solid #ccc; border-radius: 4px; height: 100%; overflow-y: auto;">
-							{{{enrichedFearRiddle}}}
-						</div>
-					{{/if}}
-				</div>
-			</div>
-		</div>
+        <div class="tab enigma {{#if (eq activeTab 'enigma')}}active{{/if}}" data-group="primary" data-tab="enigma">
+            <div class="enigma-container">
+                <span class="actor-title-header">Enigma de Medo</span>        
+                <div style="flex: 1; display: flex; flex-direction: column;">
+                    {{#if editable}}
+                        <prose-mirror name="system.details.fearRiddle" data-document-u-u-i-d="{{actor.uuid}}" value="{{system.details.fearRiddle}}" collaborate="true" toggled="true">
+                            {{{enrichedFearRiddle}}}
+                        </prose-mirror>
+                    {{else}}
+                        <div style="padding: 10px; background: rgba(255,255,255,0.5); border: 1px solid #ccc; border-radius: 4px; height: 100%; overflow-y: auto;">
+                            {{{enrichedFearRiddle}}}
+                        </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
 
         {{!-- 4. ABA DE EFEITOS --}}
         <div class="tab effects {{#ifEquals activeTab 'effects'}}active{{/ifEquals}}" data-group="primary" data-tab="effects">
