@@ -135,7 +135,11 @@
 		"dest": "------",
 		"trei": "Trained",
 		"vet": "Veteran",
-		"expe": "Expert"
+		"expe": "Expert",
+		"mast": "Master",
+		"alfa": "Alfa",
+		"gama": "Gama",
+		"delta": "Delta"
 	},
 
 	"op.className": "Class",

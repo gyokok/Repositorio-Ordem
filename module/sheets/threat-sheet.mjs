@@ -92,7 +92,7 @@ export class OrdemThreatSheet extends api.HandlebarsApplicationMixin(sheets.Acto
             editable: this.isEditable,
             owner: this.document.isOwner,
             effects: prepareActiveEffectCategories(this.actor.allApplicableEffects()),
-            optionDegree: CONFIG.op.dropdownDegree,
+            optionDegree: CONFIG.op.dropdownDegreeThreat,
             elements: CONFIG.op.dropdownElement,
             threatTypes: {"creature": "Criatura","person": "Pessoa", "animal": "Animal"},
             threatSizes: {"tiny": "Minúsculo","small": "Pequeno","medium": "Médio","large": "Grande","huge": "Enorme","colossal": "Colossal"},
@@ -195,7 +195,7 @@ export class OrdemThreatSheet extends api.HandlebarsApplicationMixin(sheets.Acto
 
     _prepareThreatSkills(context) {
         const s = this.document.system.skills || {};
-        const degreeValues = { 'untrained': 0, 'trained': 5, 'veteran': 10, 'expert': 15, 'master': 20 };
+        const degreeValues = { 'untrained': 0, 'trained': 5, 'veteran': 10, 'expert': 15, 'master': 20, 'alfa': 25, 'gama': 30, 'delta': 35 };
 
         const buildSkill = (key, label, attr) => {
             const skillData = s[key] || {};
@@ -286,7 +286,7 @@ export class OrdemThreatSheet extends api.HandlebarsApplicationMixin(sheets.Acto
         const label = target.dataset.label;
 
         const skillData = this.document.system.skills[skillKey] || {};
-        const degreeValues = { 'untrained': 0, 'trained': 5, 'veteran': 10, 'expert': 15, 'master': 20 };
+        const degreeValues = { 'untrained': 0, 'trained': 5, 'veteran': 10, 'expert': 15, 'master': 20, 'alfa': 25, 'gama': 30, 'delta': 35 };
         const currentDegreeLabel = skillData.degree?.label || 'untrained';
         const skillValue = degreeValues[currentDegreeLabel] || 0;
         
