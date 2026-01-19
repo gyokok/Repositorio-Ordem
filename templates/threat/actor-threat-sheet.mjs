@@ -1,65 +1,71 @@
 /* eslint-disable new-cap */
 import { prepareActiveEffectCategories } from '../helpers/effects.mjs';
+import { ResistanceConfig } from "../applications/resistance-config.mjs";
 
 const { api, sheets } = foundry.applications;
 
 /**
- * Ficha de Ameaça (V2) - Versão Estável
+ * Ficha de Ameaça (V2) - Versão Estável e Funcional
  * @extends {ActorSheetV2}
  */
 export class OrdemThreatSheet extends api.HandlebarsApplicationMixin(sheets.ActorSheetV2) {
-	
+    
     #dragDrop;
 
-	constructor(options = {}) {
-		super(options);
-        // Inicializa Drag & Drop
+    constructor(options = {}) {
+        super(options);
         this.#dragDrop = this.#createDragDropHandlers();
-        // Inicializa abas para evitar erro na abertura
+        // Define a aba inicial padrão
         this.tabGroups = { primary: 'attacks' };
-	}
+    }
 
-	/** @inheritDoc */
-	static get DEFAULT_OPTIONS() {
+    /** @inheritDoc */
+    static get DEFAULT_OPTIONS() {
         return foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
             classes: ['ordemparanormal', 'sheet', 'actor', 'threat', 'themed', 'theme-light'],
             tag: 'form',
-            position: {
-                width: 600,
-                height: 820
+            position: { width: 600, height: 820 },
+            window: { 
+                resizable: true, 
+                title: 'Ficha de Ameaça',
+                controls: [] // Remove controles padrão extras se houver
             },
-            window: {
-                resizable: true,
-                title: 'Ficha de Ameaça'
-            },
-            form: {
-                submitOnChange: true
+            form: { 
+                submitOnChange: true, 
+                closeOnSubmit: false 
             },
             dragDrop: [{ dragSelector: '.draggable', dropSelector: null }],
             
-            // AÇÕES (Métodos Estáticos)
+            // Mapeamento de Ações (data-action="nomeDaAcao")
             actions: {
-                onEditImage: OrdemThreatSheet._onEditImage,
-                onRollAttributeTest: OrdemThreatSheet._onRollAttributeTest,
-                onRollSkill: OrdemThreatSheet._onRollSkill,
-                onRollMentalDamage: OrdemThreatSheet._onRollMentalDamage,
+                onTab: OrdemThreatSheet.prototype._onTab,
+                onEditImage: OrdemThreatSheet.prototype._onEditImage,
                 
-                createDoc: OrdemThreatSheet._onCreateDoc,
-                viewDoc: OrdemThreatSheet._onViewDoc,
-                deleteDoc: OrdemThreatSheet._onDeleteDoc,
-                onRoll: OrdemThreatSheet._onRoll,
+                // Rolagens
+                onRollAttributeTest: OrdemThreatSheet.prototype._onRollAttributeTest,
+                onRollSkill: OrdemThreatSheet.prototype._onRollSkill,
+                onRollMentalDamage: OrdemThreatSheet.prototype._onRollMentalDamage,
+                onRoll: OrdemThreatSheet.prototype._onRoll,
                 
-                onTab: OrdemThreatSheet._onTab,
-                toggleDescription: OrdemThreatSheet._onToggleDescription
+                // Gestão de Itens e Efeitos
+                createDoc: OrdemThreatSheet.prototype._onCreateDoc,
+                viewDoc: OrdemThreatSheet.prototype._onViewDoc,
+                deleteDoc: OrdemThreatSheet.prototype._onDeleteDoc,
+                toggleDescription: OrdemThreatSheet.prototype._onToggleDescription,
+                toggleEffect: OrdemThreatSheet.prototype._onToggleEffect,
+
+                // Configurações
+                openResistanceConfig: OrdemThreatSheet.prototype._onOpenResistanceConfig
             }
         });
-	}
+    }
 
     static TABS = {
         primary: {
             tabs: [
                 { id: 'attacks', label: 'Ataques' },
                 { id: 'abilities', label: 'Habilidades' },
+                { id: 'enigma', label: 'Enigma' },
                 { id: 'effects', label: 'Efeitos' }
             ],
             initial: 'attacks',
@@ -67,60 +73,78 @@ export class OrdemThreatSheet extends api.HandlebarsApplicationMixin(sheets.Acto
         }
     };
 
-	/** @inheritDoc */
-	static PARTS = {
-		sheet: { 
-			id: 'sheet', 
-			template: 'systems/ordemparanormal/templates/threat/actor-threat-sheet.hbs' 
-		}
-	};
+    /** @inheritDoc */
+    static PARTS = {
+        sheet: { 
+            id: 'sheet', 
+            template: 'systems/ordemparanormal/templates/threat/actor-threat-sheet.hbs' 
+        }
+    };
 
     /** @override */
     _onRender(context, options) {
+        // Re-bind do Drag & Drop após renderizar
         this.#dragDrop.forEach((d) => d.bind(this.element));
     }
 
-	/** @override */
-	async _prepareContext(options) {
-		const context = await super._prepareContext(options);
+    /** * Prepara os dados para o Handlebars 
+     * @override 
+     */
+    async _prepareContext(options) {
+        const context = await super._prepareContext(options);
 
-        // Garante aba inicial
+        // Garante que existe uma aba selecionada
         if (!this.tabGroups?.primary) this.tabGroups = { primary: 'attacks' };
 
-		foundry.utils.mergeObject(context, {
-			system: this.document.system,
-			actor: this.document,
-			editable: this.isEditable,
-			owner: this.document.isOwner,
-			effects: prepareActiveEffectCategories(this.actor.allApplicableEffects()),
-            optionDegree: CONFIG.op.dropdownDegree,
+        // Mescla dados essenciais no contexto
+        foundry.utils.mergeObject(context, {
+            system: this.document.system,
+            actor: this.document,
+            editable: this.isEditable,
+            owner: this.document.isOwner,
+            effects: prepareActiveEffectCategories(this.actor.allApplicableEffects()),
+            // Listas para Dropdowns
+            optionDegree: CONFIG.op.dropdownDegree || {},
+            elements: CONFIG.op.dropdownElement || {},
+            threatTypes: {"creature": "Criatura","person": "Pessoa", "animal": "Animal"},
+            threatSizes: {"tiny": "Minúsculo","small": "Pequeno","medium": "Médio","large": "Grande","huge": "Enorme","colossal": "Colossal"},
+            // Controle de Abas
             tabs: this._getTabs(),
             activeTab: this.tabGroups.primary
-		});
-
-		this._prepareItems(context);
-		this._prepareThreatSkills(context);
-        
-        context.enrichedAbilities = await TextEditor.enrichHTML(this.actor.system.temporary.abilities, { secrets: this.document.isOwner, rollData: this.actor.getRollData(), relativeTo: this.actor });
-		context.enrichedDescription = await TextEditor.enrichHTML(this.actor.system.details.description, { secrets: this.document.isOwner, rollData: this.actor.getRollData(), relativeTo: this.actor });
-		context.enrichedFearRiddle = await TextEditor.enrichHTML(this.actor.system.details.fearRiddle, { secrets: this.document.isOwner, rollData: this.actor.getRollData(), relativeTo: this.actor });
-        context.enrichedActions = await TextEditor.enrichHTML(this.actor.system.temporary.actions, { secrets: this.document.isOwner, rollData: this.actor.getRollData(), relativeTo: this.actor });
-
-		return context;
-	}
-
-    _getTabs() {
-        const tabGroup = 'primary';
-        const currentTab = this.tabGroups[tabGroup] || this.constructor.TABS[tabGroup].initial;
-        
-        return this.constructor.TABS[tabGroup].tabs.map(tabDef => {
-            return {
-                id: tabDef.id,
-                label: tabDef.label,
-                cssClass: currentTab === tabDef.id ? 'active' : '',
-                group: tabGroup
-            };
         });
+
+        // Prepara visualização de Resistências
+        this._prepareResistances(context);
+
+        // Prepara Itens e Perícias
+        this._prepareItems(context);
+        this._prepareThreatSkills(context);
+        
+        // Enriquecimento de Texto (Biografias, Enigmas, etc)
+        context.enrichedAbilities = await TextEditor.enrichHTML(this.actor.system.temporary.abilities, { secrets: this.document.isOwner, rollData: this.actor.getRollData(), relativeTo: this.actor });
+        context.enrichedDescription = await TextEditor.enrichHTML(this.actor.system.details.description, { secrets: this.document.isOwner, rollData: this.actor.getRollData(), relativeTo: this.actor });
+        context.enrichedFearRiddle = await TextEditor.enrichHTML(this.actor.system.details.fearRiddle, { secrets: this.document.isOwner, rollData: this.actor.getRollData(), relativeTo: this.actor });
+        
+        return context;
+    }
+
+    // Separei a lógica de resistências para limpar o _prepareContext
+    _prepareResistances(context) {
+        context.viewResistances = {};
+        const allDamageTypes = CONFIG.op.dropdownDamageType || {}; 
+        const actorResistances = context.system.resistances || {};
+
+        for (const [key, labelKey] of Object.entries(allDamageTypes)) {
+            const resData = actorResistances[key] || { value: 0, vulnerable: false, immune: false };
+            // Mostra apenas se tiver algum valor relevante
+            const isVisible = (resData.value > 0) || (resData.vulnerable === true) || (resData.immune === true);
+
+            context.viewResistances[key] = {
+                ...resData,
+                isVisible: isVisible,
+                translatedLabel: game.i18n.localize(`op.damageTypeAbv.${key}`)
+            };
+        }
     }
 
     _prepareItems(context) {
@@ -131,7 +155,6 @@ export class OrdemThreatSheet extends api.HandlebarsApplicationMixin(sheets.Acto
             i.img = i.img || DEFAULT_TOKEN;
             
             if (i.type === 'armament') {
-                // Labels de Ataque
                 const rangeType = i.system.types?.rangeType?.name;
                 const itemBonus = i.system.formulas?.attack?.bonus;
                 
@@ -157,10 +180,9 @@ export class OrdemThreatSheet extends api.HandlebarsApplicationMixin(sheets.Acto
                 attacks.push(i);
             } 
             else if (i.type === 'ability') {
-                // Custo e Labels
                 const costVal = i.system.cost || "—";
                 const costType = i.system.costType || "PE";
-                i.displayCost = (costVal !== "—" && costVal !== "") ? `${costVal} ${costType}` : "—";
+                i.displayCost = (costVal !== "—" && costVal !== "") && costVal != 0 ? `${costVal} ${costType}` : "—";
                 
                 if (i.system.activation) {
                     i.activationLabel = game.i18n.localize(`op.executionChoices.${i.system.activation}`);
@@ -179,100 +201,146 @@ export class OrdemThreatSheet extends api.HandlebarsApplicationMixin(sheets.Acto
         context.abilities = abilities;
     }
 
-	_prepareThreatSkills(context) {
-		const s = this.document.system.skills || {};
-		const buildSkill = (key, label, attr) => {
-			const skillData = s[key] || {};
+    _prepareThreatSkills(context) {
+        const s = this.document.system.skills || {};
+        
+        // Tabela de valores para exibição
+        const degreeValues = { 'untrained': 0, 'trained': 5, 'veteran': 10, 'expert': 15, 'master': 20 };
+
+        const buildSkill = (key, label, attr) => {
+            const skillData = s[key] || {};
             const rawName = (key === 'freeSkill' && skillData.name) ? skillData.name : "";
-			const displayLabel = (key === 'freeSkill' && skillData.name) ? skillData.name : label;
+            const displayLabel = (key === 'freeSkill' && skillData.name) ? skillData.name : label;
             const attrLabel = game.i18n.localize(`op.${attr}Abv`).toUpperCase();
-			return {
-				key: key,
-				label: displayLabel,
+            
+            const currentDegreeLabel = skillData.degree?.label || 'untrained';
+            const calculatedValue = degreeValues[currentDegreeLabel] || 0;
+
+            return {
+                key: key,
+                label: displayLabel,
                 name: rawName,
-				attr: attr,
+                attr: attr,
                 attrLabel: attrLabel,
-				degreeLabel: skillData.degree?.label || 'untrained', 
-				value: skillData.degree?.value || 0,
-				isFree: key === 'freeSkill'
-			};
-		};
-		context.threatSkills = [
-			buildSkill('fighting', 'Luta', 'str'),
-			buildSkill('aim', 'Pontaria', 'dex'),
-			buildSkill('resilience', 'Fortitude', 'vit'),
-			buildSkill('reflexes', 'Reflexo', 'dex'),
-			buildSkill('will', 'Vontade', 'pre'),
-			buildSkill('initiative', 'Iniciativa', 'dex'),
-			buildSkill('perception', 'Percepção', 'pre'),
-			buildSkill('freeSkill', 'Perícia Livre', 'int')
-		];
-	}
+                degreeLabel: currentDegreeLabel, 
+                value: calculatedValue, 
+                isFree: key === 'freeSkill'
+            };
+        };
 
-    // Helper de Instância (Acessado pelos estáticos via 'this')
-	_getEmbeddedDocument(target) {
-		const docRow = target.closest('li[data-document-class]');
+        context.threatSkills = [
+            buildSkill('fighting', 'Luta', 'str'),
+            buildSkill('aim', 'Pontaria', 'dex'),
+            buildSkill('resilience', 'Fortitude', 'vit'),
+            buildSkill('reflexes', 'Reflexo', 'dex'),
+            buildSkill('will', 'Vontade', 'pre'),
+            buildSkill('initiative', 'Iniciativa', 'dex'),
+            buildSkill('perception', 'Percepção', 'pre'),
+            buildSkill('freeSkill', 'Perícia Livre', 'int')
+        ];
+    }
+
+    _getTabs() {
+        const tabGroup = 'primary';
+        const currentTab = this.tabGroups[tabGroup] || this.constructor.TABS[tabGroup].initial;
+        return this.constructor.TABS[tabGroup].tabs.map(tabDef => {
+            return {
+                id: tabDef.id,
+                label: tabDef.label,
+                cssClass: currentTab === tabDef.id ? 'active' : '',
+                group: tabGroup
+            };
+        });
+    }
+
+    _getEmbeddedDocument(target) {
+        const docRow = target.closest('li[data-document-class]');
         if (!docRow) return null;
-		if (docRow.dataset.documentClass === 'Item') {
-			return this.actor.items.get(docRow.dataset.itemId);
-		} else if (docRow.dataset.documentClass === 'ActiveEffect') {
-			return this.actor.effects.get(docRow.dataset.effectId);
-		}
-	}
+        if (docRow.dataset.documentClass === 'Item') {
+            return this.actor.items.get(docRow.dataset.itemId);
+        } else if (docRow.dataset.documentClass === 'ActiveEffect') {
+            return this.actor.effects.get(docRow.dataset.effectId);
+        }
+    }
 
-	/* -------------------------------------------- */
-	/* Action Handlers (MÉTODOS ESTÁTICOS)          */
-	/* -------------------------------------------- */
+    /* -------------------------------------------- */
+    /* Action Handlers (MÉTODOS DE INSTÂNCIA)      */
+    /* -------------------------------------------- */
 
-    static async _onTab(event, target) {
+    async _onTab(event, target) {
         event.preventDefault();
         const tab = target.dataset.tab;
         this.tabGroups.primary = tab;
         this.render();
     }
 
-	static async _onEditImage(event, target) {
-		const attr = target.dataset.edit;
-		const current = foundry.utils.getProperty(this.document, attr);
-		const { img } = this.document.constructor.getDefaultArtwork?.(this.document.toObject()) ?? {};
-		const fp = new FilePicker({
-			current,
-			type: 'image',
-			redirectToRoot: img ? [img] : [],
-			callback: (path) => this.document.update({ [attr]: path }),
-			top: this.position.top + 40,
-			left: this.position.left + 10,
-		});
-		return fp.browse();
-	}
+    async _onEditImage(event, target) {
+        const attr = target.dataset.edit;
+        const current = foundry.utils.getProperty(this.document, attr);
+        const { img } = this.document.constructor.getDefaultArtwork?.(this.document.toObject()) ?? {};
+        const fp = new FilePicker({
+            current,
+            type: 'image',
+            redirectToRoot: img ? [img] : [],
+            callback: (path) => this.document.update({ [attr]: path }),
+            top: this.position.top + 40,
+            left: this.position.left + 10,
+        });
+        return fp.browse();
+    }
 
-	static _onRollAttributeTest(event, target) {
-		event.preventDefault();
-		const attribute = target.dataset.key;
-		this.actor.rollAttribute({ attribute, event });
-	}
-
-	static async _onRollSkill(event, target) {
-		event.preventDefault();
-		const skillKey = target.dataset.key;
-		const attrKey = target.dataset.attr;
-		const label = target.dataset.label;
-		const skillData = this.document.system.skills[skillKey] || {};
-		const skillValue = skillData.degree?.value || 0;
-		const attrValue = this.document.system.attributes[attrKey]?.value || 0;
-		const diceFormula = attrValue > 0 ? `${attrValue}d20kh1` : "2d20kl1";
-		const formula = `${diceFormula} + ${skillValue}`;
-		const roll = new Roll(formula);
-		await roll.toMessage({
-			flavor: `Teste de ${label} <span style="font-size: 0.8em; color: gray">(${attrKey.toUpperCase()})</span>`,
-			speaker: ChatMessage.getSpeaker({ actor: this.document })
-		});
-	}
-
-    static async _onRollMentalDamage(event, target) {
+    // CORREÇÃO: Passando o objeto corretamente para evitar o erro "One of original or other are not Objects"
+    _onRollAttributeTest(event, target) {
         event.preventDefault();
-        const formula = this.document.system.disturbingPresence.mentalDamage;
-        if (!formula || formula.trim() === "") return ui.notifications.warn("Defina um valor para o Dano Mental.");
+        const attribute = target.dataset.key;
+        if (this.actor.rollAttribute) {
+            // AQUI ESTAVA O ERRO: Agora passa um único objeto de configuração
+            this.actor.rollAttribute({ attribute: attribute, event: event }); 
+        } else {
+            console.error("Função rollAttribute não encontrada no ator.");
+        }
+    }
+
+    async _onRollSkill(event, target) {
+        event.preventDefault();
+        const skillKey = target.dataset.key;
+        const attrKey = target.dataset.attr;
+        const label = target.dataset.label;
+
+        const skillData = this.document.system.skills[skillKey] || {};
+        
+        // Valores de bônus
+        const degreeValues = { 'untrained': 0, 'trained': 5, 'veteran': 10, 'expert': 15, 'master': 20 };
+
+        const currentDegreeLabel = skillData.degree?.label || 'untrained';
+        const skillValue = degreeValues[currentDegreeLabel] || 0;
+        const attrValue = this.document.system.attributes[attrKey]?.value || 0;
+        
+        // 0 Atributo rola 2d20kl1, senão rola Xd20kh1
+        const diceFormula = attrValue > 0 ? `${attrValue}d20kh1` : "2d20kl1";
+        const formula = `${diceFormula} + ${skillValue}`;
+
+        const roll = new Roll(formula, this.actor.getRollData());
+        await roll.toMessage({
+            flavor: `Teste de ${label} <span style="font-size: 0.8em; color: gray">(${attrKey.toUpperCase()})</span>`,
+            speaker: ChatMessage.getSpeaker({ actor: this.document })
+        });
+    }
+
+    async _onRollMentalDamage(event, target) {
+        event.preventDefault();
+        let formula = this.document.system.disturbingPresence.mentalDamage;
+        
+        // Tenta pegar do input se não estiver salvo
+        if (!formula || formula.trim() === "") {
+            const inputElement = target.closest('div').querySelector('input');
+            if (inputElement) formula = inputElement.value;
+        }
+
+        if (!formula || formula.trim() === "") {
+            return ui.notifications.warn("Defina um valor para o Dano Mental (Ex: 2d6).");
+        }
+        
         try {
             const roll = new Roll(formula, this.actor.getRollData());
             await roll.toMessage({
@@ -280,51 +348,55 @@ export class OrdemThreatSheet extends api.HandlebarsApplicationMixin(sheets.Acto
                 speaker: ChatMessage.getSpeaker({ actor: this.document })
             });
         } catch (err) {
-            ui.notifications.error(`Erro: ${err.message}`);
+            ui.notifications.error(`Erro na fórmula de dano: ${err.message}`);
         }
     }
 
-	static async _onCreateDoc(event, target) {
+    async _onCreateDoc(event, target) {
         event.preventDefault();
-		const docCls = getDocumentClass(target.dataset.documentClass);
-		const docData = {
-			name: docCls.defaultName({ type: target.dataset.type, parent: this.document }),
-            type: target.dataset.type,
-            system: {}
-		};
-		await docCls.create(docData, { parent: this.document });
-	}
+        const docClass = target.dataset.documentClass; 
+        const docCls = getDocumentClass(docClass);
 
-	static _onViewDoc(event, target) {
-		const doc = this._getEmbeddedDocument(target);
-		if (doc) doc.sheet.render(true);
-	}
+        if (docClass === "ActiveEffect") {
+             const effectData = {
+                name: docCls.defaultName({ parent: this.document }),
+                icon: "icons/svg/aura.svg"
+            };
+            await docCls.create(effectData, { parent: this.document });
+        } else {
+            const type = target.dataset.type;
+            const docData = {
+                name: docCls.defaultName({ type: type, parent: this.document }),
+                type: type,
+                system: {}
+            };
+            await docCls.create(docData, { parent: this.document });
+        }
+    }
 
-	static async _onDeleteDoc(event, target) {
-		const doc = this._getEmbeddedDocument(target);
-		if (doc) await doc.delete();
-	}
+    _onViewDoc(event, target) {
+        const doc = this._getEmbeddedDocument(target);
+        if (doc) doc.sheet.render(true);
+    }
 
-	static async _onRoll(event, target) {
-		event.preventDefault();
-		
-		// 1. Tenta recuperar usando a lógica original da Ficha de Ameaça (estrita)
-		let doc = this._getEmbeddedDocument(target);
+    async _onDeleteDoc(event, target) {
+        const doc = this._getEmbeddedDocument(target);
+        if (doc) await doc.delete();
+    }
 
-		// 2. Se falhar, usa a lógica da Ficha de Jogador (mais flexível)
-		// Busca pelo container com a classe .item que tenha um data-item-id
-		if (!doc) {
-			const itemRow = target.closest('.item');
-			if (itemRow && itemRow.dataset.itemId) {
-				doc = this.actor.items.get(itemRow.dataset.itemId);
-			}
-		}
+    async _onRoll(event, target) {
+        event.preventDefault();
+        let doc = this._getEmbeddedDocument(target);
+        if (!doc) {
+            const itemRow = target.closest('.item');
+            if (itemRow && itemRow.dataset.itemId) {
+                doc = this.actor.items.get(itemRow.dataset.itemId);
+            }
+        }
+        if (doc) return doc.roll();
+    }
 
-		// Se encontrou o item, realiza a rolagem
-		if (doc) return doc.roll();
-	}
-
-    static async _onToggleDescription(event, target) {
+    async _onToggleDescription(event, target) {
         const li = target.closest("li");
         const summary = li.querySelector(".item-summary");
         if (summary) {
@@ -339,9 +411,23 @@ export class OrdemThreatSheet extends api.HandlebarsApplicationMixin(sheets.Acto
             div.style.fontSize = "0.9em";
             div.style.borderTop = "1px dashed #ccc";
             div.style.marginTop = "5px";
-            div.innerHTML = await TextEditor.enrichHTML(item.system.description, {async: true});
+            div.innerHTML = await TextEditor.enrichHTML(item.system.description, {
+                secrets: this.document.isOwner,
+                rollData: this.actor.getRollData(),
+                async: true
+            });
             li.appendChild(div);
         }
+    }
+
+    async _onToggleEffect(event, target) {
+        const effect = this._getEmbeddedDocument(target);
+        if (effect) await effect.update({ disabled: !effect.disabled });
+    }
+
+    async _onOpenResistanceConfig(event, target) {
+        event.preventDefault();
+        new ResistanceConfig(this.document).render(true);
     }
 
     /* -------------------------------------------- */
@@ -360,7 +446,7 @@ export class OrdemThreatSheet extends api.HandlebarsApplicationMixin(sheets.Acto
 
     _onDragStart(event) {
         const docRow = event.currentTarget.closest('li');
-        if ('link' in event.target.dataset) return;
+        if (event.target.dataset.link) return;
         const item = this._getEmbeddedDocument(docRow);
         if (!item) return;
         event.dataTransfer.setData('text/plain', JSON.stringify(item.toDragData()));
@@ -372,6 +458,7 @@ export class OrdemThreatSheet extends api.HandlebarsApplicationMixin(sheets.Acto
         const data = TextEditor.getDragEventData(event);
         if (!this.actor.isOwner) return false;
         if (data.type === 'Item') return this._onDropItem(event, data);
+        if (data.type === 'ActiveEffect') return this._onDropActiveEffect(event, data);
     }
 
     async _onDropItem(event, data) {
@@ -379,5 +466,12 @@ export class OrdemThreatSheet extends api.HandlebarsApplicationMixin(sheets.Acto
         if (!item) return false;
         if (this.actor.uuid === item.parent?.uuid) return false;
         return this.actor.createEmbeddedDocuments('Item', [item]);
+    }
+
+    async _onDropActiveEffect(event, data) {
+        const aeCls = getDocumentClass('ActiveEffect');
+        const effect = await aeCls.fromDropData(data);
+        if (!this.actor.isOwner || !effect) return false;
+        return aeCls.create(effect, { parent: this.actor });
     }
 }
